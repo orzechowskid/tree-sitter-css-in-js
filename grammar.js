@@ -6,8 +6,8 @@
  * using complex JS expressions in your CSS-in-JS anyway.
  ***/
 
-module.exports = grammar(require('../grammar'), {
-  name: 'my_grammar',
+module.exports = grammar(require('../tree-sitter-css/grammar'), {
+  name: 'css_in_js',
 
   rules: {
     /* new rules specific to CSS-in-JS */
