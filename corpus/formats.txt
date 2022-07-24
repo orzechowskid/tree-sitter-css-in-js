@@ -1,0 +1,105 @@
+====================
+identifier
+====================
+
+${foo}
+
+---
+
+(stylesheet
+  (js_interpolation))
+
+====================
+dot-notation property access
+====================
+
+${foo.bar}
+${foo?.bar}
+
+---
+
+(stylesheet
+  (js_interpolation)
+  (js_interpolation))
+
+====================
+bracket-notation property access
+====================
+
+${foo[bar]}
+${foo['bar']}
+
+---
+
+(stylesheet
+  (js_interpolation)
+  (js_interpolation))
+
+====================
+function invocation
+====================
+
+${foo(bar)}
+${foo("bar", 1, true)}
+
+---
+
+(stylesheet
+  (js_interpolation)
+  (js_interpolation))
+
+====================
+null coalescing
+====================
+
+${foo ?? bar.baz}
+
+---
+
+(stylesheet
+  (js_interpolation))
+
+====================
+ternary
+====================
+
+${foo ? bar.baz : 'auto'}
+
+---
+
+(stylesheet
+  (js_interpolation))
+
+====================
+fat-arrow function, 1 parameter, no parens
+====================
+
+${foo => foo.bar}
+
+---
+
+(stylesheet
+  (js_interpolation))
+
+====================
+fat-arrow function, 1 parameter, parens
+====================
+
+${(foo) => foo.bar}
+
+---
+
+(stylesheet
+  (js_interpolation))
+
+====================
+fat-arrow function, 1 parameter, 1 destructured parameter
+====================
+
+${({foo}) => foo}
+
+---
+
+(stylesheet
+  (js_interpolation))
+

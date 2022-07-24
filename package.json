@@ -1,0 +1,30 @@
+{
+  "name": "tree-sitter-css-in-js",
+  "version": "0.0.1",
+  "description": "css-in-js grammar for tree-sitter",
+  "main": "bindings/node",
+  "keywords": [
+    "parsing",
+    "incremental"
+  ],
+  "dependencies": {
+    "nan": "^2.12.1",
+    "node-gyp": "^9.1.0"
+  },
+  "devDependencies": {
+    "tree-sitter-cli": "^0.20.6"
+  },
+  "scripts": {
+    "node-gyp": "node-gyp configure && node-gyp build",
+    "test": "tree-sitter test"
+  },
+  "tree-sitter": [
+    {
+      "scope": "source.css",
+      "file-types": [
+        "css"
+      ],
+      "injection-regex": "^css_in_js$"
+    }
+  ]
+}

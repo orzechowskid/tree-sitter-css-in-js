@@ -1,0 +1,88 @@
+====================
+bare interpolation
+====================
+
+${foo}
+
+---
+
+(stylesheet
+  (js_interpolation))
+
+====================
+interpolation as rule
+====================
+
+* {
+  ${foo}
+}
+
+---
+
+(stylesheet
+  (rule_set
+    (selectors
+      (universal_selector))
+    (block
+      (js_interpolation))))
+
+====================
+interpolation as rule value
+====================
+
+* {
+  height: ${foo};
+}
+
+---
+
+(stylesheet
+  (rule_set
+    (selectors
+      (universal_selector))
+    (block
+      (declaration
+        (property_name) (js_interpolation)))))
+
+====================
+interpolation before rule block
+====================
+
+${foo}
+
+* {
+  height: 0;
+}
+
+---
+
+(stylesheet
+  (js_interpolation)
+  (rule_set
+    (selectors
+      (universal_selector))
+    (block
+      (declaration
+        (property_name) (integer_value)))))
+
+====================
+interpolation after rule block
+====================
+
+* {
+  height: 0;
+}
+
+${foo}
+
+---
+
+(stylesheet
+  (rule_set
+    (selectors
+      (universal_selector))
+    (block
+      (declaration
+        (property_name) (integer_value))))
+  (js_interpolation))
+
