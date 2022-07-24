@@ -1,6 +1,6 @@
 tree-sitter grammar for CSS-in-JS.
 
-clone this repo into a directory where it'll be a sibling of `tree-sitter-css`.
+clone this repo into a directory where it'll be a sibling of [`tree-sitter-css`](https://github.com/tree-sitter/tree-sitter-css).
 
 ```
 [me@pc: ~/repos]$ ls
