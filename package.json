@@ -15,6 +15,7 @@
     "tree-sitter-cli": "^0.20.6"
   },
   "scripts": {
+    "build": "node-gyp configure && node-gyp build && tree-sitter generate",
     "go": "node-gyp configure && node-gyp build && tree-sitter generate && tree-sitter test",
     "test": "tree-sitter test"
   },
