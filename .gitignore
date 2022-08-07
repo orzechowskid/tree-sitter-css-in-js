@@ -3,3 +3,4 @@ build
 target
 *.log
 Cargo.lock
+tree-sitter-css
