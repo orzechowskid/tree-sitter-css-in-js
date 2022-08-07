@@ -29,4 +29,4 @@ jobs:
     - run: npm ci
     - run: npm run build --if-present
     - run: npm test
-    - run: pwd
+    - run: find /home/runner -name '*css_in_js*'
