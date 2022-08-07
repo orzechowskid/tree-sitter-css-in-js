@@ -1,31 +1,33 @@
 {
-  "name": "tree-sitter-css-in-js",
-  "version": "0.0.1",
-  "description": "css-in-js grammar for tree-sitter",
-  "main": "bindings/node",
-  "keywords": [
-    "parsing",
-    "incremental"
-  ],
-  "dependencies": {
-    "nan": "^2.12.1",
-    "node-gyp": "^9.1.0"
-  },
-  "devDependencies": {
-    "tree-sitter-cli": "^0.20.6"
-  },
-  "scripts": {
-    "build": "node-gyp configure && node-gyp build && tree-sitter generate",
-    "go": "node-gyp configure && node-gyp build && tree-sitter generate && tree-sitter test",
-    "test": "tree-sitter test"
-  },
-  "tree-sitter": [
-    {
-      "scope": "source.css",
-      "file-types": [
-        "css"
-      ],
-      "injection-regex": "^css_in_js$"
-    }
-  ]
+    "name": "tree-sitter-css-in-js",
+    "version": "0.0.1",
+    "description": "css-in-js grammar for tree-sitter",
+    "main": "bindings/node",
+    "keywords": [
+        "parsing",
+        "incremental"
+    ],
+    "dependencies": {
+        "nan": "^2.12.1",
+        "node-gyp": "^9.1.0"
+    },
+    "devDependencies": {
+        "tree-sitter-cli": "^0.20.6"
+    },
+    "scripts": {
+        "build": "node-gyp configure && node-gyp build && tree-sitter generate",
+        "clone": "git clone https://github.com/orzechowskid/tree-sitter-css.git",
+        "go": "node-gyp configure && node-gyp build && tree-sitter generate && tree-sitter test",
+        "postinstall": "npm run clone",
+        "test": "tree-sitter test"
+    },
+    "tree-sitter": [
+        {
+            "scope": "source.css",
+            "file-types": [
+                "css"
+            ],
+            "injection-regex": "^css_in_js$"
+        }
+    ]
 }

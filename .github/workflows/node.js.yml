@@ -27,7 +27,4 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
     - run: npm ci
-    - run: pushd ..
-    - run: git clone https://github.com/tree-sitter/tree-sitter-css
-    - run: popd
     - run: npm run build --if-present
