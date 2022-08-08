@@ -38,14 +38,11 @@ jobs:
         echo "1. $HOME 2. ${{ env.HOME }} 3. $env:HOME"
         echo "1. $LIBDIR 2. ${{ env.LIBDIR }} 3. $env:LIBDIR"
         
-    - name: Create tarball
-      uses: a7ul/tar-action@v1.1.0
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
       with:
-        command: c
-        cwd: $env:LIBDIR
-        files: |
-          css_in_js.dll
-        outPath: $env:TARBALL
+        name: css_in_js.dll
+        path: $env:LIBDIR\css_in_js.dll
 
 
   build-release-linux:
