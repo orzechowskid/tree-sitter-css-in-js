@@ -96,10 +96,9 @@ jobs:
 
     - name: Set shared library info
       run: |
-        echo LIBDIR="C:\\Users\\runner\\AppData\\Local\\tree-sitter\\lib" >> $GITHUB_ENV
+        echo LIBDIR="${{ env.HOME }}\\AppData\\Local\\tree-sitter\\lib" >> $GITHUB_ENV
         echo LIBNAME="css_in_js.dll" >> $GITHUB_ENV
         echo PLATFORM="windows" >> $GITHUB_ENV
-        cat $GITHUB_ENV
 
     - name: Get Node.js ${{ matrix.node-version }}
       uses: actions/checkout@v3
@@ -123,4 +122,4 @@ jobs:
         cwd: ${{ env.LIBDIR }}
         files: |
           ${{ env.LIBNAME }}
-        outPath: "C:\\Users\\runner\\${{ env.PLATFORM }}.tar.gz"
+        outPath: "${{ env.HOME }}\\${{ env.PLATFORM }}.tar.gz"
