@@ -19,6 +19,7 @@ jobs:
       run: |
         echo LIBDIR=$HOME/.cache/tree-sitter/lib >> $GITHUB_ENV
         echo TARBALL=$HOME/linux.tar.gz >> $GITHUB_ENV
+
     - name: Get Node.js ${{ matrix.node-version }}
       uses: actions/checkout@v3
 
@@ -52,6 +53,11 @@ jobs:
 
     steps:
 
+    - name: Configure shared-library info
+      run: |
+        echo LIBDIR=$HOME/Library/Caches/tree-sitter/lib >> $GITHUB_ENV
+        echo TARBALL=$HOME/osx.tar.gz >> $GITHUB_ENV
+
     - name: Get Node.js ${{ matrix.node-version }}
       uses: actions/checkout@v3
 
@@ -71,10 +77,10 @@ jobs:
       uses: a7ul/tar-action@v1.1.0
       with:
         command: c
-        cwd: "$HOME/Library/Caches/tree-sitter/lib"
+        cwd: ${{ env.LIBDIR }}
         files: |
           css_in_js.so
-        outPath: "$HOME/osx.tar.gz"
+        outPath: ${{ env.TARBALL }}
 
 
   build-release-windows:
