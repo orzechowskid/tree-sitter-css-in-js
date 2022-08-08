@@ -20,7 +20,7 @@ jobs:
 
     - name: Set shared library info
       run: |
-        echo LIBDIR="~/Library/Caches/tree-sitter/lib" >> $GITHUB_ENV
+        echo LIBDIR="/Users/runner/Library/Caches/tree-sitter/lib" >> $GITHUB_ENV
         echo LIBNAME="css_in_js.so" >> $GITHUB_ENV
         echo PLATFORM="osx" >> $GITHUB_ENV
 
@@ -59,7 +59,7 @@ jobs:
 
     - name: Set shared library info
       run: |
-        echo LIBDIR="~/.cache/tree-sitter/lib" >> $GITHUB_ENV
+        echo LIBDIR="/home/runner/.cache/tree-sitter/lib" >> $GITHUB_ENV
         echo LIBNAME="css_in_js.so" >> $GITHUB_ENV
         echo PLATFORM="linux" >> $GITHUB_ENV
 
