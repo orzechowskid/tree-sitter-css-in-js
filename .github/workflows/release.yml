@@ -122,3 +122,19 @@ jobs:
         name: macos.tar.gz
         path: /Users/runner/Library/Caches/tree-sitter/macos.tar.gz
         if-no-files-found: error
+
+  generate-release:
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: write
+      
+    steps:
+    
+    - name: Collect packages
+      uses: actions/download-artifact@v3
+      with:
+        path: ~/artifacts
+    - name: blorp
+      run: |
+        find ~/artifacts
