@@ -65,7 +65,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: linux/css_in_js.so
-        path: $HOME/.cache/tree-sitter/lib/css_in_js.so
+        path: ~/.cache/tree-sitter/lib/css_in_js.so
         if-no-files-found: error
 
 
@@ -96,5 +96,5 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: osx/css_in_js.so
-        path: $HOME/Library/Caches/tree-sitter/lib/css_in_js.so
+        path: ~/Library/Caches/tree-sitter/lib/css_in_js.so
         if-no-files-found: error
