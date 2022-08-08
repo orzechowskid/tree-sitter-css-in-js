@@ -8,6 +8,46 @@ on:
     branches: [ "main" ]
 
 jobs:
+  build-release-windows:
+    runs-on: windows-latest
+
+    permissions:
+        contents: write
+
+    steps:
+
+    - name: Configure shared-library info
+      run: |
+        echo LIBDIR=$env:HOME\AppData\Local\tree-sitter\lib >> $env:GITHUB_ENV
+        echo TARBALL=$env:HOME\windows.tar.gz >> $env:GITHUB_ENV
+
+    - name: Get Node.js ${{ matrix.node-version }}
+      uses: actions/checkout@v3
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+
+    - name: Build and test
+      run: |
+        npm ci
+        npm run build --if-present
+        npm run test
+        echo $env:HOME
+        dir $env:HOME
+        
+    - name: Create tarball
+      uses: a7ul/tar-action@v1.1.0
+      with:
+        command: c
+        cwd: $env:LIBDIR
+        files: |
+          css_in_js.dll
+        outPath: $env:TARBALL
+
+
   build-release-linux:
     runs-on: ubuntu-latest
 
@@ -83,40 +123,3 @@ jobs:
         outPath: ${{ env.TARBALL }}
 
 
-  build-release-windows:
-    runs-on: windows-latest
-
-    permissions:
-        contents: write
-
-    steps:
-
-    - name: Configure shared-library info
-      run: |
-        echo LIBDIR=$env:HOME\AppData\Local\tree-sitter\lib >> $env:GITHUB_ENV
-        echo TARBALL=$env:HOME\windows.tar.gz >> $env:GITHUB_ENV
-
-    - name: Get Node.js ${{ matrix.node-version }}
-      uses: actions/checkout@v3
-
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-
-    - name: Build and test
-      run: |
-        npm ci
-        npm run build --if-present
-        npm run test
-        dir $env:HOME /s
-        
-    - name: Create tarball
-      uses: a7ul/tar-action@v1.1.0
-      with:
-        command: c
-        cwd: $env:LIBDIR
-        files: |
-          css_in_js.dll
-        outPath: $env:TARBALL
