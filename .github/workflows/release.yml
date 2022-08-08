@@ -42,7 +42,8 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: css_in_js.dll
-        path: $env:LIBDIR\css_in_js.dll
+        path: ${{ env.LIBDIR }}\css_in_js.dll
+        if-no-files-found: error
 
 
   build-release-linux:
