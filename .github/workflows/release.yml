@@ -8,7 +8,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
+  release:
     runs-on: ubuntu-latest
     permissions:
         contents: write
@@ -19,17 +19,17 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - name: Create and push tag
-      uses: mathieudutour/github-tag-action@v6.0
+    - name: Build and test
+      run: |
+        npm ci
+        npm run build --if-present
+        npm run test
+        tar -C /home/runner/.cache/tree-sitter/lib/ -zcf css_in_js.so.tar.gz css_in_js.so
+    - name: Create release
+      uses: marvinpinto/action-automatic-releases@latest
       with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-    - run: npm ci
-    - run: npm run build --if-present
-    - run: npm test
-    - run: tar -C /home/runner/.cache/tree-sitter/lib/ -zcf css_in_js.so.tar.gz css_in_js.so
-    - name: Create Release
-      uses: ncipollo/release-action@v1.10.0
-      with:
-        artifacts: css_in_js.so.tar.gz
-        tag: ${{ steps.tag_version.outputs.new_tag }}
-        name: Release ${{ steps.tag_version.outputs.new_tag }}
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        automatic_release_tag: latest
+        prerelease: false
+        files: |
+          css_in_js.so.tar.gz
