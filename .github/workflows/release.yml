@@ -80,7 +80,7 @@ jobs:
     - name: Upload tarball
       uses: actions/upload-artifact@v3
       with:
-        name: windows/css_in_js.dll
+        name: windows.tar.gz
         path: C:\Users\runneradmin\AppData\Local\tree-sitter\lib\css_in_js.dll
         if-no-files-found: error
 
