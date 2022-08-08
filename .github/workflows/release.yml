@@ -37,12 +37,16 @@ jobs:
         directory: /home/runner/.cache/tree-sitter
         path: lib/*
         filename: linux.tar.gz
+        
+    - name: blerg
+      run: |
+        find /home/runner/.cache
 
     - name: Upload tar file
       uses: actions/upload-artifact@v3
       with:
         name: linux.tar.gz
-        path: /home/runner/.cache/tree-sitter/lib/linux.tar.gz
+        path: /home/runner/.cache/tree-sitter/linux.tar.gz
         if-no-files-found: error
 
 
