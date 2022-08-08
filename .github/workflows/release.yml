@@ -35,9 +35,8 @@ jobs:
         npm ci
         npm run build --if-present
         npm run test
-        echo "$HOME ${{ env.HOME }} $env:HOME"
-        echo "$LIBDIR ${{ env.LIBDIR }} $env:LIBDIR"
-        dir $env:LIBDIR
+        echo "1. $HOME 2. ${{ env.HOME }} 3. $env:HOME"
+        echo "1. $LIBDIR 2. ${{ env.LIBDIR }} 3. $env:LIBDIR"
         
     - name: Create tarball
       uses: a7ul/tar-action@v1.1.0
