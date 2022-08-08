@@ -9,12 +9,9 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     permissions:
         contents: write
-
     steps:
     - uses: actions/checkout@v3
     - name: Use Node.js ${{ matrix.node-version }}
@@ -22,6 +19,9 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
+      uses: mathieudutour/github-tag-action@v6.0
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
     - run: npm ci
     - run: npm run build --if-present
     - run: npm test
@@ -30,6 +30,5 @@ jobs:
       uses: ncipollo/release-action@v1.10.0
       with:
         artifacts: css_in_js.so.tar.gz
-        tag: 'released'
-        commit: 'main'
-    - run: echo "done!"
+        tag: ${{ steps.tag_version.outputs.new_tag }}
+        name: Release ${{ steps.tag_version.outputs.new_tag }}
