@@ -34,7 +34,8 @@ jobs:
       uses: TheDoctor0/zip-release@0.6.2
       with:
         type: tar
-        directory: /home/runner/.cache/tree-sitter/lib
+        directory: /home/runner/.cache/tree-sitter
+        path: lib/*
         filename: linux.tar.gz
 
     - name: Upload tar file
