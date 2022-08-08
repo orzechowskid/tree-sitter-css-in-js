@@ -30,4 +30,3 @@ jobs:
       uses: ncipollo/release-action@v1.10.0
       with:
         artifacts: css_in_js.so.tar.gz
-        tag: 'latest'
