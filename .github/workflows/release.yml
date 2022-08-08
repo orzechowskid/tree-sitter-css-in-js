@@ -8,6 +8,39 @@ on:
     branches: [ "main" ]
 
 jobs:
+  build-release-linux:
+    runs-on: ubuntu-latest
+
+    permissions:
+        contents: write
+
+    steps:
+
+    - name: Get Node.js ${{ matrix.node-version }}
+      uses: actions/checkout@v3
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+
+    - name: Build and test
+      run: |
+        npm ci
+        npm run build --if-present
+        npm run test
+        
+    - name: Create tarball
+      uses: a7ul/tar-action@v1.1.0
+      with:
+        command: c
+        cwd: ~/.cache/tree-sitter/lib
+        files: |
+          css_in_js.so
+        outPath: ~/linux.tar.gz
+
+
   build-release-macos:
     runs-on: macos-latest
 
@@ -39,39 +72,6 @@ jobs:
         files: |
           css_in_js.so
         outPath: "$HOME/osx.tar.gz"
-
-
-  build-release-linux:
-    runs-on: ubuntu-latest
-
-    permissions:
-        contents: write
-
-    steps:
-
-    - name: Get Node.js ${{ matrix.node-version }}
-      uses: actions/checkout@v3
-
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-
-    - name: Build and test
-      run: |
-        npm ci
-        npm run build --if-present
-        npm run test
-        
-    - name: Create tarball
-      uses: a7ul/tar-action@v1.1.0
-      with:
-        command: c
-        cwd: "$HOME/.cache/tree-sitter/lib"
-        files: |
-          css_in_js.so
-        outPath: "$HOME/linux.tar.gz"
 
 
   build-release-windows:
