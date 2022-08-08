@@ -18,8 +18,8 @@ jobs:
 
     - name: Configure shared-library info
       run: |
-        echo LIBDIR=$env:HOME\AppData\Local\tree-sitter\lib >> $env:GITHUB_ENV
-        echo TARBALL=$env:HOME\windows.tar.gz >> $env:GITHUB_ENV
+        echo LIBDIR=C:\Users\runneradmin\AppData\Local\tree-sitter\lib >> $env:GITHUB_ENV
+        echo TARBALL=C:\Users\runneradmin\windows.tar.gz >> $env:GITHUB_ENV
 
     - name: Get Node.js ${{ matrix.node-version }}
       uses: actions/checkout@v3
@@ -35,7 +35,9 @@ jobs:
         npm ci
         npm run build --if-present
         npm run test
-        dir C:\Users
+        echo "$HOME ${{ env.HOME }} $env:HOME"
+        echo "$LIBDIR ${{ env.LIBDIR }} $env:LIBDIR"
+        dir $env:LIBDIR
         
     - name: Create tarball
       uses: a7ul/tar-action@v1.1.0
