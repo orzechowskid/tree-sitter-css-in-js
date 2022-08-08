@@ -46,6 +46,7 @@ jobs:
         cwd: ${{ env.LIBDIR }}
         files: |
           ${{ env.LIBNAME }}
+        outPath: "~/${{ env.PLATFORM }}.tar.gz"
 
 
   build-release-linux:
@@ -84,3 +85,4 @@ jobs:
         cwd: ${{ env.LIBDIR }}
         files: |
           ${{ env.LIBNAME }}
+        outPath: "~/${{ env.PLATFORM }}.tar.gz"
