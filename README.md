@@ -2,7 +2,7 @@
 
 ## Releases
 
-binaries for all supported OS/hardware platforms (all 1 of them) are automatically built for you.  Freshest copies of the shared libraries can be found in the `latest` release.
+binaries for all supported OS/hardware platforms (all 1 of them: 64-bit Ubuntu) are automatically built for you.  Freshest copies of the shared libraries can be found in the `latest` release.
 
 ## Problem?
 
