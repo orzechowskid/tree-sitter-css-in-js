@@ -16,11 +16,6 @@ jobs:
 
     steps:
 
-    - name: Configure shared-library info
-      run: |
-        echo LIBDIR=C:\Users\runneradmin\AppData\Local\tree-sitter\lib >> $env:GITHUB_ENV
-        echo TARBALL=C:\Users\runneradmin\windows.tar.gz >> $env:GITHUB_ENV
-
     - name: Get Node.js ${{ matrix.node-version }}
       uses: actions/checkout@v3
 
@@ -35,14 +30,12 @@ jobs:
         npm ci
         npm run build --if-present
         npm run test
-        echo "1. $HOME 2. ${{ env.HOME }} 3. $env:HOME"
-        echo "1. $LIBDIR 2. ${{ env.LIBDIR }} 3. $env:LIBDIR"
-        
+
     - name: Upload artifact
       uses: actions/upload-artifact@v3
       with:
-        name: css_in_js.dll
-        path: ${{ env.LIBDIR }}\css_in_js.dll
+        name: windows/css_in_js.dll
+        path: C:\Users\runneradmin\AppData\Local\tree-sitter\lib\css_in_js.dll
         if-no-files-found: error
 
 
@@ -53,11 +46,6 @@ jobs:
         contents: write
 
     steps:
-    - name: Configure shared-library info
-      run: |
-        echo LIBDIR=$HOME/.cache/tree-sitter/lib >> $GITHUB_ENV
-        echo TARBALL=$HOME/linux.tar.gz >> $GITHUB_ENV
-
     - name: Get Node.js ${{ matrix.node-version }}
       uses: actions/checkout@v3
 
@@ -73,14 +61,12 @@ jobs:
         npm run build --if-present
         npm run test
         
-    - name: Create tarball
-      uses: a7ul/tar-action@v1.1.0
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
       with:
-        command: c
-        cwd: ${{ env.LIBDIR }}
-        files: |
-          css_in_js.so
-        outPath: ${{ env.TARBALL }}
+        name: linux/css_in_js.so
+        path: $HOME/.cache/tree-sitter/lib/css_in_js.so
+        if-no-files-found: error
 
 
   build-release-macos:
@@ -91,11 +77,6 @@ jobs:
 
     steps:
 
-    - name: Configure shared-library info
-      run: |
-        echo LIBDIR=$HOME/Library/Caches/tree-sitter/lib >> $GITHUB_ENV
-        echo TARBALL=$HOME/osx.tar.gz >> $GITHUB_ENV
-
     - name: Get Node.js ${{ matrix.node-version }}
       uses: actions/checkout@v3
 
@@ -111,13 +92,9 @@ jobs:
         npm run build --if-present
         npm run test
         
-    - name: Create tarball
-      uses: a7ul/tar-action@v1.1.0
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
       with:
-        command: c
-        cwd: ${{ env.LIBDIR }}
-        files: |
-          css_in_js.so
-        outPath: ${{ env.TARBALL }}
-
-
+        name: osx/css_in_js.so
+        path: $HOME/Library/Caches/tree-sitter/lib/css_in_js.so
+        if-no-files-found: error
