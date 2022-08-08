@@ -15,7 +15,9 @@ jobs:
         contents: write
 
     steps:
-
+    - name: Configure shared-library info
+      run: |
+        echo LIBDIR=$HOME/.cache/tree-sitter/lib >> $GITHUB_ENV
     - name: Get Node.js ${{ matrix.node-version }}
       uses: actions/checkout@v3
 
@@ -35,7 +37,7 @@ jobs:
       uses: a7ul/tar-action@v1.1.0
       with:
         command: c
-        cwd: ~/.cache/tree-sitter/lib
+        cwd: ${{ env.LIBDIR }}
         files: |
           css_in_js.so
         outPath: ~/linux.tar.gz
