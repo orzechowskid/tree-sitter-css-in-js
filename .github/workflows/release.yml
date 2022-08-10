@@ -44,6 +44,7 @@ jobs:
         name: linux.tar.gz
         path: /home/runner/.cache/tree-sitter/linux.tar.gz
         if-no-files-found: error
+        retention-days: 1
 
 
   build-release-windows:
@@ -83,6 +84,7 @@ jobs:
         name: windows.tar.gz
         path: C:\Users\runneradmin\AppData\Local\tree-sitter\lib\css_in_js.dll
         if-no-files-found: error
+        retention-days: 1
 
 
   build-release-macos:
@@ -122,12 +124,14 @@ jobs:
         name: macos.tar.gz
         path: /Users/runner/Library/Caches/tree-sitter/macos.tar.gz
         if-no-files-found: error
+        retention-days: 1
+
 
   generate-release:
     runs-on: ubuntu-latest
     
-    needs: [ build-release-macos, build-release-windows, build-release-linux ]
-    
+    #needs: [ build-release-macos, build-release-windows, build-release-linux ]
+    needs: [ build-release-linux ]
     permissions:
       contents: write
       
@@ -137,6 +141,12 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         path: ~/artifacts
-    - name: blorp
-      run: |
-        find ~
+    - name: Create release
+      uses: "marvinpinto/action-automatic-releases@latest"
+      with:
+        repo_token: "${{ secrets.GITHUB_TOKEN }}"
+        automatic_release_tag: "latest"
+        prerelease: false
+        title: "Grammar bundle"
+        files: |
+          ~/artifacts/**/*.tar.gz
