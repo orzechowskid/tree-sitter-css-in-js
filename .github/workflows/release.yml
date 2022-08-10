@@ -137,4 +137,4 @@ jobs:
         path: ~/artifacts
     - name: blorp
       run: |
-        find ~/artifacts
+        find ~
