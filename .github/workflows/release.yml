@@ -42,7 +42,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: linux-latest
-        path: /home/runner/.cache/tree-sitter/linux.tar.gz
+        path: /home/runner/.cache/tree-sitter/lib/linux.tar.gz
         if-no-files-found: error
         retention-days: 1
 
@@ -82,7 +82,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: windows-latest
-        path: C:\Users\runneradmin\AppData\Local\tree-sitter\windows.tar.gz
+        path: C:\Users\runneradmin\AppData\Local\tree-sitter\lib\windows.tar.gz
         if-no-files-found: error
         retention-days: 1
 
@@ -122,7 +122,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: macos-latest
-        path: /Users/runner/Library/Caches/tree-sitter/macos.tar.gz
+        path: /Users/runner/Library/Caches/tree-sitter/lib/macos.tar.gz
         if-no-files-found: error
         retention-days: 1
 
