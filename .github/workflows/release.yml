@@ -152,4 +152,4 @@ jobs:
         prerelease: false
         title: "Grammar bundle"
         files: |
-          ~/artifacts/**/*.tar.gz
+          ~/artifacts/linux-latest/linux.tar.gz
