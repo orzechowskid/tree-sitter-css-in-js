@@ -141,6 +141,9 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         path: ~/artifacts
+    - name: blorp
+      run: |
+        find ~/artifacts | xargs ls -l
     - name: Create release
       uses: "marvinpinto/action-automatic-releases@latest"
       with:
