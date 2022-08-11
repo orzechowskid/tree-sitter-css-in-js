@@ -41,7 +41,7 @@ jobs:
     - name: Upload tarball
       uses: actions/upload-artifact@v3
       with:
-        name: linux.tar.gz
+        name: linux-latest
         path: /home/runner/.cache/tree-sitter/linux.tar.gz
         if-no-files-found: error
         retention-days: 1
@@ -81,7 +81,7 @@ jobs:
     - name: Upload tarball
       uses: actions/upload-artifact@v3
       with:
-        name: windows.tar.gz
+        name: windows-latest
         path: C:\Users\runneradmin\AppData\Local\tree-sitter\lib\css_in_js.dll
         if-no-files-found: error
         retention-days: 1
@@ -121,7 +121,7 @@ jobs:
     - name: Upload tarball
       uses: actions/upload-artifact@v3
       with:
-        name: macos.tar.gz
+        name: macos-latest
         path: /Users/runner/Library/Caches/tree-sitter/macos.tar.gz
         if-no-files-found: error
         retention-days: 1
