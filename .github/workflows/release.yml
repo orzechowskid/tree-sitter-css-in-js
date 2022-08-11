@@ -35,6 +35,7 @@ jobs:
       with:
         type: tar
         directory: /home/runner/.cache/tree-sitter/lib
+        path: css_in_js.so
         filename: linux.tar.gz
         
     - name: Upload tarball
@@ -74,6 +75,7 @@ jobs:
       with:
         type: tar
         directory: C:\Users\runneradmin\AppData\Local\tree-sitter\lib
+        path: css_in_js.dll
         filename: windows.tar.gz
 
     - name: Upload tarball
@@ -113,6 +115,7 @@ jobs:
       with:
         type: tar
         directory: /Users/runner/Library/Caches/tree-sitter/lib
+        path: css_in_js.so
         filename: macos.tar.gz
 
     - name: Upload tarball
