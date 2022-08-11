@@ -10,6 +10,8 @@
 
 ;;; Code:
 
+(require 'tree-sitter)
+
 (defconst tree-sitter-css-in-js--archive
   "https://github.com/orzechowskid/tree-sitter-css-in-js/releases/download/latest/"
   "Location of tarball containing tree-sitter CSS-in-JS binaries.")
@@ -19,29 +21,42 @@
   "Location on disk of the directory containing this library.")
 
 (defun tree-sitter-css-in-js--filename-for-platform ()
-  "Returns the name of a shared library binary appropriate for the current OS
+  "Internal function.
+
+Returns the name of a shared-library archive appropriate for the current OS
 and hardware."
   (cond
-   ;; TODO: works on my machine!
-   (t "css_in_js.so")))
+   ((eq system-type "windows")
+    "windows.tar.gz")
+   ((eq system-type "darwin")
+    "macos.tar.gz")
+   (t "linux.tar.gz")))
 
-(let* ((filename (tree-sitter-css-in-js--filename-for-platform))
-       (lib-dir tree-sitter-css-in-js--lib-dir)
-       (tarball (concat filename ".tar.gz")))
-  (unless (file-exists-p (file-name-concat
-                          lib-dir
-                          filename))
-    (message "fetching CSS-in-JS parser binary...")
+(defun tree-sitter-css-in-js-fetch-archive (&optional force)
+  "Downloads and uncompresses a platform-appropriate archive containing a tree-
+sitter parser.  Setting FORCE to `t' will re-download the parser even if one is
+already present on disk."
 
-    (let ((inhibit-message t))
+  (let* ((filename
+          (tree-sitter-css-in-js--filename-for-platform))
+         (lib-dir
+          tree-sitter-css-in-js--lib-dir)
+         (fs-path
+          (file-name-concat lib-dir filename)))
+    (when (or (not (file-exists-p fs-path))
+              force)
+      (message "fetching CSS-in-JS parser binary...")
+
       (url-copy-file
-       (concat tree-sitter-css-in-js--archive tarball)
-       (file-name-concat lib-dir tarball)
-       t)
+       (concat tree-sitter-css-in-js--archive filename) ; remote
+       fs-path ; local
+       t) ; overwrite
       (call-process
        "tar"
        nil nil nil
-       "-C" lib-dir "-zxf" (file-name-concat lib-dir tarball))
-      (add-to-list 'tree-sitter-load-path lib-dir))))
+       "-C" lib-dir "-zxf" fs-path))))
+
+(tree-sitter-css-in-js-fetch-archive)
+(add-to-list 'tree-sitter-load-path tree-sitter-css-in-js--lib-dir)
 
 (provide 'tree-sitter-css-in-js)
