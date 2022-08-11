@@ -137,19 +137,19 @@ jobs:
       
     steps:
     
-    - name: Collect packages
+    - name: Collect tarballs
       uses: actions/download-artifact@v3
       with:
-        path: ~/artifacts
+        path: ./artifacts
     - name: blorp
       run: |
         find ~/artifacts | xargs ls -l
-    - name: Create release
+    - name: Publish release
       uses: "marvinpinto/action-automatic-releases@latest"
       with:
         repo_token: "${{ secrets.GITHUB_TOKEN }}"
         automatic_release_tag: "latest"
         prerelease: false
-        title: "Grammar bundle"
+        title: "Grammar binaries bundle"
         files: |
-          ~/artifacts/linux-latest/linux.tar.gz
+          artifacts/linux-latest/linux.tar.gz
