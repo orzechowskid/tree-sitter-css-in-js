@@ -34,8 +34,7 @@ jobs:
       uses: TheDoctor0/zip-release@0.6.2
       with:
         type: tar
-        directory: /home/runner/.cache/tree-sitter
-        path: lib/*
+        directory: /home/runner/.cache/tree-sitter/lib
         filename: linux.tar.gz
         
     - name: Upload tarball
@@ -74,8 +73,7 @@ jobs:
       uses: TheDoctor0/zip-release@0.6.2
       with:
         type: tar
-        directory: C:\Users\runneradmin\AppData\Local\tree-sitter
-        path: lib/*
+        directory: C:\Users\runneradmin\AppData\Local\tree-sitter\lib
         filename: windows.tar.gz
 
     - name: Upload tarball
@@ -114,8 +112,7 @@ jobs:
       uses: TheDoctor0/zip-release@0.6.2
       with:
         type: tar
-        directory: /Users/runner/Library/Caches/tree-sitter
-        path: lib/*
+        directory: /Users/runner/Library/Caches/tree-sitter/lib
         filename: macos.tar.gz
 
     - name: Upload tarball
