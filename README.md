@@ -4,8 +4,10 @@
 
 binaries for all supported OS/hardware platforms (Linux, OSX, and Windows) are automatically built for you.  Freshest copies of the shared libraries can be found in the `latest` release.
 
-## Problem?
+## Elisp bindings
 
-this doesn't build due to problems with tree-sitter-css using an external scanner.  see [#1808](https://github.com/tree-sitter/tree-sitter/issues/1808).  help
+download `tree-sitter-css-in-js.el` and add it to your `load-path`.  `(require 'tree-sitter-css-in-js)` then should automatically download the shared library appropriate for your platform and configure tree-sitter to use it.
 
-update: this builds with the scanner taken from tree-sitter-css but that's not a great solution!
+## License
+
+src/scanner.c is licensed under the MIT License.  Original source can be found at https://github.com/tree-sitter/tree-sitter-css .
