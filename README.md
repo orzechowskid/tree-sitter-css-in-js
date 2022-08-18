@@ -6,6 +6,14 @@ I don't 100% know what this is good for really.  but it's been helpful in gettin
 
 binaries for all supported OS/hardware platforms (Linux, OSX, and Windows) are automatically built for you.  Freshest copies of the shared libraries can be found in the `latest` release.
 
+## Local build instructions
+
+1. clone this repo
+2. run `npm install` to install dependencies
+3. run `npm run build` to build a tree-sitter shared library appropriate for your platform.  the shared library will be written to a platform-specific directory; check [tree-sitter's documentation](https://tree-sitter.github.io/tree-sitter/syntax-highlighting#per-user-configuration) to see where your .so / .dll is.
+
+if you're using Emacs, you should not need to take any further steps for tree-sitter to be made aware of your shared library; the elisp-tree-sitter package should already know about the platform-specific directory mentioned in step 3 above.
+
 ## Elisp bindings
 
 download `tree-sitter-css-in-js.el` and add it to your `load-path`.  `(require 'tree-sitter-css-in-js)` then should automatically download the shared library appropriate for your platform and configure tree-sitter to use it.
