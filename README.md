@@ -4,7 +4,7 @@ I don't 100% know what this is good for really.  but it's been helpful in gettin
 
 ## Releases
 
-binaries for all supported OS/hardware platforms (Linux, OSX, and Windows) are automatically built for you.  Freshest copies of the shared libraries can be found in the `latest` release.
+binaries for all supported OS/hardware platforms (Linux, OSX, and Windows, all on x86_64) are automatically built for you.  Freshest copies of the shared libraries can be found in the `latest` release.
 
 ## Local build instructions
 
