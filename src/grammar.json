@@ -54,6 +54,10 @@
         },
         {
           "type": "SYMBOL",
+          "name": "_block_item"
+        },
+        {
+          "type": "SYMBOL",
           "name": "js_interpolation"
         }
       ]

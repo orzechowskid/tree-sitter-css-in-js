@@ -86,3 +86,34 @@ ${foo}
         (property_name) (integer_value))))
   (js_interpolation))
 
+====================
+interpolation inside a block
+====================
+
+div {
+  ${foo};
+}
+
+---
+
+(stylesheet
+  (rule_set
+    (selectors
+      (tag_name))
+    (block
+      (js_interpolation))))
+
+====================
+interpolation with other rules
+====================
+
+${foo};
+display: block;
+
+---
+
+(stylesheet
+  (js_interpolation)
+  (declaration
+    (property_name)
+    (plain_value)))
