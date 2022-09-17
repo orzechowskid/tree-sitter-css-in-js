@@ -81,6 +81,7 @@ module.exports = grammar(require('./tree-sitter-css/grammar'), {
     
     _top_level_item: ($, original) => choice(
       original,
+      $._block_item,
       $.js_interpolation
     ),
     

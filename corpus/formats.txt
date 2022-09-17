@@ -102,4 +102,3 @@ ${({foo}) => foo}
 
 (stylesheet
   (js_interpolation))
-
