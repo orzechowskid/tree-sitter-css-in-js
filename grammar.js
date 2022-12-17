@@ -26,12 +26,12 @@ module.exports = grammar(require('./tree-sitter-css/grammar'), {
       prec.right(1, seq($._js_expr, '??', $._js_expr)), // foo ?? bar
       prec.right(0, seq($._js_expr, '?', $._js_expr, ':', $._js_expr)), // foo ? bar : baz
       seq(
-	$._js_identifier,
-	optional(choice(
-	  seq(/\??\./, $._js_identifier), // foo?.bar
-	  seq(optional(/\??\./), '(', optional($._js_args), ')'), // foo?.(bar)
-	  seq(optional(/\??\./), '[', $._js_expr, ']') // foo?.[bar]
-	))
+	      $._js_identifier,
+	      optional(choice(
+	        seq(/\??\./, $._js_identifier), // foo?.bar
+	        seq(optional(/\??\./), '(', optional($._js_args), ')'), // foo?.(bar)
+	        seq(optional(/\??\./), '[', $._js_expr, ']') // foo?.[bar]
+	      ))
       )
     ),
 
@@ -48,15 +48,15 @@ module.exports = grammar(require('./tree-sitter-css/grammar'), {
     _js_args: $ => seq(
       $._js_expr,
       repeat(seq(
-	',',
-	$._js_expr
+	      ',',
+	      $._js_expr
       ))
     ),
 
     _js_fat_arrow_function: $ => seq(
       choice(
-	$._js_identifier,
-	seq('(', optional($._js_params), ')')
+	      $._js_identifier,
+	      seq('(', optional($._js_params), ')')
       ),
       '=>',
       $._js_expr
@@ -65,8 +65,8 @@ module.exports = grammar(require('./tree-sitter-css/grammar'), {
     js_interpolation: $ => seq(
       '${',
       choice(
-	$._js_expr,
-	$._js_fat_arrow_function
+	      $._js_expr,
+	      $._js_fat_arrow_function
       ),
       '}'
     ),
@@ -93,15 +93,15 @@ module.exports = grammar(require('./tree-sitter-css/grammar'), {
     declaration: ($, original) => choice(
       original,
       seq(
-	alias($.identifier, $.property_name), // keep alias from CSS rule
-	':',
-	$.js_interpolation,
-	repeat(seq(
+	      alias($.identifier, $.property_name), // keep alias from CSS rule
+	      ':',
+	      $.js_interpolation,
+	      repeat(seq(
           optional(','),
           $._value
-	)),
-	optional($.important),
-	';'
+	      )),
+	      optional($.important),
+	      ';'
       )
     )
   }

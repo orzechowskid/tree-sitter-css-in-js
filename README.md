@@ -1,29 +1,75 @@
-# tree-sitter grammar for CSS-in-JS
+# tree-sitter-css-in-js
 
-I don't 100% know what this is good for really.  but it's been helpful in getting CSS-in-JS to work more accurately in [`tsx-mode`](https://github.com/orzechowskid/tsx-mode.el), a TS/TSX major mode for emacs.  Maybe it will be helpful to you too somehow?
+## tree-sitter grammar
 
-## Releases
+a [tree-sitter](https://tree-sitter.github.io/tree-sitter/) grammar based on [the existing CSS tree-sitter grammar](https://github.com/tree-sitter/tree-sitter-css) which adds support for Javascript/Typescript template-string interpolation tokens (without which the CSS parser would - rightly - generate syntax errors).  the intended usage is in IDEs where source code files are parsed using multiple tree-sitter languages at the same time:
+
+```
+const height = '16px';          /* javascript */
+const MyComponent = styled.div`
+  display: inline-block;        /* CSS */
+  height: ${height};            /* both! */
+  background-color: tomato;
+`;
+```
+
+this should provide the basic functionality required for IDEs to support features like indentation, syntax highlighting, and code-completion hinting for CSS-in-JS using tree-sitter:
+
+![](https://repository-images.githubusercontent.com/515372828/a6f10257-e841-4553-9ccf-b7e6cd525b18)
+
+### Releases
 
 binaries for all supported OS/hardware platforms (Linux, OSX, and Windows, all on x86_64) are automatically built for you.  Freshest copies of the shared libraries can be found in the `latest` release.
 
-## Local build instructions
+### Local build instructions
 
 1. clone this repo
 2. run `npm install` to install dependencies
 3. run `npm run build` to build a tree-sitter shared library appropriate for your platform.  the shared library will be written to a platform-specific directory; check [tree-sitter's documentation](https://tree-sitter.github.io/tree-sitter/syntax-highlighting#per-user-configuration) to see where your .so / .dll is.
 
-if you're using Emacs, you should not need to take any further steps for tree-sitter to be made aware of your shared library; the elisp-tree-sitter package should already know about the platform-specific directory mentioned in step 3 above.
+emacs users should note that this repository is not currently compatible with the language-builder repo at https://github.com/casouri/tree-sitter-module/ .  (the package.json in this repo has an npm postinstall step which clones the base CSS grammar repo)
 
-## Elisp bindings
+## emacs minor mode
 
-download `tree-sitter-css-in-js.el` and add it to your `load-path`.  `(require 'tree-sitter-css-in-js)` then should automatically download the shared library appropriate for your platform and configure tree-sitter to use it.
+`css-in-js-mode` is an emacs minor mode designed to bring support for (several flavors of) CSS-in-JS to the treesit-aware Javascript/Typescript/JSX/TSX major modes in emacs version 29.0 and newer.  syntax highlighting, indentation, and completion-at-point are all supported.
 
-> or use [straight.el](https://github.com/radian-software/straight.el):
-> `(straight-use-package '(tree-sitter-css-in-js :type git :host github :repo "orzechowskid/tree-sitter-css-in-js"))`
+### Requirements
 
-> or with `use-package`:
-> `(use-package tree-sitter-css-in-js
->   :straight '(tree-sitter-css-in-js :type git :host github :repo "orzechowskid/tree-sitter-css-in-js"))`
+- a version of emacs compiled with treesit support
+- a shared-library binary appropriate for your OS + CPU (see above sections)
+
+### Installation
+
+1. download `css-in-js-mode.el` and put it in a directory listed in your `load-path`
+1. load the file: `(require 'css-in-js)`
+
+> these steps can also be done using [straight.el](https://github.com/radian-software/straight.el):
+> `(straight-use-package '(css-in-js-mode :type git :host github :repo "orzechowskid/tree-sitter-css-in-js"))`
+>
+> or using straight.el plus use-package:
+> `(use-package css-in-js-mode
+>   :straight '(css-in-js-mode :type git :host github :repo "orzechowskid/tree-sitter-css-in-js"))`
+
+### Usage
+
+1. visit a javascript/typescript file and enable the Typescript[TSX] major mode: `(tsx-ts-mode)`
+1. enable this minor-mode: `(css-in-js-mode)`
+
+### Configuration
+
+useful variables are members of the `css-in-js-mode` customization group and can be viewed and modified with the command `M-x customize-group [RET] css-in-js-mode [RET]`.
+
+this minor mode also uses `css-indent-offset` to control the amount of whitespace applied to each indent step so be sure to set that to an acceptable value too.
+
+## Bugs
+
+### Grammar bugs
+
+please first check to see that your bug is not present when parsing a file using the base CSS grammar (from which the CSS-in-JS grammar derives).  if it is present there too then you'll want to file an issue over at https://github.com/tree-sitter/tree-sitter-css .
+
+### emacs minor-mode bugs
+
+please first check to see that your bug is not present in the base `tsx-ts-mode` or `css-ts-mode` (whichever one is applicable).  if it is present there too then you'll want to file an issue against emacs by using `M-x report-emacs-bug` (after reading through the manual at `M-x info-emacs-bug` first).
 
 ## License
 
