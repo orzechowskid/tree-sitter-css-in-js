@@ -36,7 +36,6 @@ emacs users should note that this repository is not currently compatible with th
 ### Requirements
 
 - a version of emacs compiled with treesit support
-- a shared-library binary appropriate for your OS + CPU (see above sections)
 
 ### Installation
 
@@ -52,6 +51,7 @@ emacs users should note that this repository is not currently compatible with th
 
 ### Usage
 
+1. fetch the tree-sitter shared library appropriate for your OS+CPU if you don't already have it on disk: `(css-in-js-mode-fetch-shared-library)` (and pass it an argument of `t` to force a re-download of the latest released version if you do already have it on disk)
 1. visit a javascript/typescript file and enable the Typescript[TSX] major mode: `(tsx-ts-mode)`
 1. enable this minor-mode: `(css-in-js-mode)`
 
