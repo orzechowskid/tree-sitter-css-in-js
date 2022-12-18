@@ -29,13 +29,14 @@ jobs:
         npm ci
         npm run build --if-present
         npm run test
+        mv /home/runner/.cache/tree-sitter/lib/css_in_js.so /home/runner/.cache/tree-sitter/libtree-sitter-css-in-js.so
 
     - name: Create tar file
       uses: TheDoctor0/zip-release@0.6.2
       with:
         type: tar
         directory: /home/runner/.cache/tree-sitter/lib
-        path: css_in_js.so
+        path: libtree-sitter-css-in-js.so
         filename: linux.tar.gz
         
     - name: Upload tarball
@@ -69,13 +70,14 @@ jobs:
         npm ci
         npm run build --if-present
         npm run test
+        copy C:\Users\runneradmin\AppData\Local\tree-sitter\lib\css_in_js.dll C:\Users\runneradmin\AppData\Local\tree-sitter-lib\libtree-sitter-css-in-js.dll
 
     - name: Create tar file
       uses: TheDoctor0/zip-release@0.6.2
       with:
         type: tar
         directory: C:\Users\runneradmin\AppData\Local\tree-sitter\lib
-        path: css_in_js.dll
+        path: libtree-sitter-css-in-js.dll
         filename: windows.tar.gz
 
     - name: Upload tarball
@@ -109,13 +111,14 @@ jobs:
         npm ci
         npm run build --if-present
         npm run test
+        mv /Users/runner/Library/Caches/tree-sitter/lib/css_in_js.so /Users/runner/Library/Caches/tree-sitter/lib/libtree-sitter-css-in-js.so
 
     - name: Create tar file
       uses: TheDoctor0/zip-release@0.6.2
       with:
         type: tar
         directory: /Users/runner/Library/Caches/tree-sitter/lib
-        path: css_in_js.so
+        path: libtree-sitter-css-in-js.so
         filename: macos.tar.gz
 
     - name: Upload tarball
