@@ -30,7 +30,7 @@ jobs:
         npm run build --if-present
         npm run test
         ls -l /home/runner/.cache/tree-sitter/lib
-        mv /home/runner/.cache/tree-sitter/lib/css_in_js.so /home/runner/.cache/tree-sitter/libtree-sitter-css-in-js.so
+        mv /home/runner/.cache/tree-sitter/lib/css_in_js.so /home/runner/.cache/tree-sitter/lib/libtree-sitter-css-in-js.so
         ls -l /home/runner/.cache/tree-sitter/lib
 
     - name: Create tar file
@@ -72,7 +72,7 @@ jobs:
         npm ci
         npm run build --if-present
         npm run test
-        copy C:\Users\runneradmin\AppData\Local\tree-sitter\lib\css_in_js.dll C:\Users\runneradmin\AppData\Local\tree-sitter-lib\libtree-sitter-css-in-js.dll
+        copy C:\Users\runneradmin\AppData\Local\tree-sitter\lib\css_in_js.dll C:\Users\runneradmin\AppData\Local\tree-sitter\lib\libtree-sitter-css-in-js.dll
 
     - name: Create tar file
       uses: TheDoctor0/zip-release@0.6.2
