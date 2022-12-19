@@ -114,7 +114,7 @@ jobs:
         npm run test
         mv /Users/runner/Library/Caches/tree-sitter/lib/css_in_js.so /Users/runner/Library/Caches/tree-sitter/lib/libtree-sitter-css-in-js.so
         # arm64
-        gcc -o parser.xyz -fPIC -c -I./src src/parser.c src/scanner.c -target arm64-apple-macos11
+        gcc -fPIC -c -I./src src/parser.c src/scanner.c -target arm64-apple-macos11
         ls -l
 
     - name: Create tar file
