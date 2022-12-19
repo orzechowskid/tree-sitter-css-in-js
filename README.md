@@ -19,7 +19,14 @@ this should provide the basic functionality required for IDEs to support feature
 
 ### Releases
 
-binaries for all supported OS/hardware platforms (Linux, OSX, and Windows, all on x86_64) are automatically built for you.  Freshest copies of the shared libraries can be found in the `latest` release.
+shared libraries for all supported OS+CPU platforms are automatically built for you.  Freshest copies of these shared libraries can be found in the Github release tagged `latest`.
+
+| OS      | Arch    | Status           |
+|---------|---------|------------------|
+| Linux   | x86\_64 | builds; tested   |
+| OSX     | x86\_64 | builds; untested |
+| OSX     | arm64   | builds; untested |
+| Windows | x86\_64 | builds; untested |
 
 ### Local build instructions
 
