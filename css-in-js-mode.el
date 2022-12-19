@@ -317,11 +317,7 @@ and BOL."
   :version "29.0"
 
   (when (treesit-ready-p 'css-in-js)
-    ;; find css-in-js ranges
-    ;; (setq-local
-    ;;  treesit-range-settings
-    ;;  (treesit-range-rules
-    ;;   #'css-in-js-mode--treesit-set-ranges))
+    ;; define css-in-js ranges
     (setq-local
      treesit-language-at-point-function
      #'css-in-js-mode--get-language-at-pos)
@@ -378,13 +374,14 @@ and hardware."
 (defun css-in-js-mode--treesit-shared-library-path ()
   "Returns the absolute path to a filesystem directory suitable for storing
 tree-sitter shared libraries."
-  (let ((path (file-name-concat user-emacs-directory "tree-sitter")))
+  (let ((path (expand-file-name (file-name-concat user-emacs-directory "tree-sitter"))))
     (make-directory path t)
     path))
 
+;;;###autoload
 (defun css-in-js-mode-fetch-shared-library (&optional force)
   "Fetches a remote archive containing a tree-sitter shared library suitable for
-the current OS+CPU, uncompresses it, and stores it in a location accessed by
+the current OS+CPU, uncompresses it, and stores it in a location accessible by
 treesit.
 Skips re-downloading if the archive is already present on disk, unless FORCE is
 set to `t'."
@@ -398,10 +395,10 @@ set to `t'."
        (concat css-in-js--treesit-library--archives archive-name)
        archive-fs-path
        t)
-      (call-process
-       "tar"
-       nil nil nil
-       "-C" lib-dir "-zxf" archive-fs-path))))
+      (= 0 (call-process
+            "tar"
+            nil nil nil
+            "-C" lib-dir "-zxf" archive-fs-path)))))
 
 
 (provide 'css-in-js-mode)
