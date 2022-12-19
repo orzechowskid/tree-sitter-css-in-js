@@ -116,14 +116,14 @@ jobs:
         # arm64
         gcc -fPIC -c -I./src src/parser.c src/scanner.c -target arm64-apple-macos11
         cc -fPIC -shared parser.o scanner.o -o "libtree-sitter-css-in-js.dylib" -target arm64-apple-macos11
-        file libtree-sitter-css-in-js.dylib
+        mv libtree-sitter-css-in-js.dylib /Users/runner/Library/Caches/tree-sitter/lib/
 
     - name: Create tar file
       uses: TheDoctor0/zip-release@0.6.2
       with:
         type: tar
         directory: /Users/runner/Library/Caches/tree-sitter/lib
-        path: libtree-sitter-css-in-js.so
+        path: .
         filename: macos.tar.gz
 
     - name: Upload tarball
