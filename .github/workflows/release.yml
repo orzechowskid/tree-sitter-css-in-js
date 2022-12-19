@@ -123,7 +123,7 @@ jobs:
       with:
         type: tar
         directory: /Users/runner/Library/Caches/tree-sitter/lib
-        path: .
+        path: libtree-sitter-css-in-js.*
         filename: macos.tar.gz
 
     - name: Upload tarball
