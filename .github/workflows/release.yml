@@ -110,20 +110,14 @@ jobs:
       run: |
         npm ci
         npm run build --if-present
-        # build for x86_64
         npm run test
-        mv /Users/runner/Library/Caches/tree-sitter/lib/css_in_js.so /Users/runner/Library/Caches/tree-sitter/lib/libtree-sitter-css-in-js.so
-        # arm64
-        gcc -fPIC -c -I./src src/parser.c src/scanner.c -target arm64-apple-macos11
-        cc -fPIC -shared parser.o scanner.o -o "libtree-sitter-css-in-js.dylib" -target arm64-apple-macos11
-        mv libtree-sitter-css-in-js.dylib /Users/runner/Library/Caches/tree-sitter/lib/
 
     - name: Create tar file
       uses: TheDoctor0/zip-release@0.6.2
       with:
         type: tar
         directory: /Users/runner/Library/Caches/tree-sitter/lib
-        path: libtree-sitter-css-in-js.*
+        path: libtree-sitter-css-in-js.so
         filename: macos.tar.gz
 
     - name: Upload tarball
