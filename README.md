@@ -2,7 +2,7 @@
 
 ## tree-sitter grammar
 
-a [tree-sitter](https://tree-sitter.github.io/tree-sitter/) grammar based on [the existing CSS tree-sitter grammar](https://github.com/tree-sitter/tree-sitter-css) which adds support for Javascript/Typescript template-string interpolation tokens (without which the CSS parser would - rightly - generate syntax errors).  the intended usage is in IDEs where source code files are parsed using multiple tree-sitter languages at the same time:
+a [tree-sitter](https://tree-sitter.github.io/tree-sitter/) grammar based on [the existing CSS tree-sitter grammar](https://github.com/tree-sitter/tree-sitter-css) which adds support for Javascript/Typescript template-string interpolation tokens.  the intended usage is in IDEs where source code files are parsed using multiple tree-sitter languages at the same time:
 
 ```
 const height = '16px';          /* javascript */
