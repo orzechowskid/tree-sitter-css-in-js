@@ -115,6 +115,7 @@ jobs:
         mv /Users/runner/Library/Caches/tree-sitter/lib/css_in_js.so /Users/runner/Library/Caches/tree-sitter/lib/libtree-sitter-css-in-js.so
         # arm64
         gcc -fPIC -c -I./src src/parser.c src/scanner.c -target arm64-apple-macos11
+        cc -fPIC -shared parser.o scanner.o -o "libtree-sitter-css-in-js.dylib" -target arm64-apple-macos11
         ls -l
 
     - name: Create tar file
