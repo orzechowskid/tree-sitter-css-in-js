@@ -16,10 +16,10 @@
   "Location of archives containing tree-sitter CSS-in-JS shared libraries.")
 
 
-(defcustom css-in-js-mode-force-highlighting nil
+(defcustom css-in-js-mode-force-highlighting t
   "Enable/disable always-on CSS-in-JS syntax highlighting.
-Default behavior is to only highlight the region containing point (if
-any); set to `t' to override."
+Default behavior is to always highlight all regions.  set to `nil' to only
+highlight the region containing point (if any)."
   :type 'boolean
   :group 'css-in-js-mode
   :package-version '(css-in-js-mode "1.0"))
@@ -122,6 +122,8 @@ using the color specified by that value."
    '((integer_value) @font-lock-number-face
      (float_value) @font-lock-number-face
      (unit) @font-lock-constant-face
+     ;; e.g. `width: ${foo}px;`
+     (declaration ((js_interpolation) (plain_value) @font-lock-constant-face (:match "px\\|em\\|rem\\|vw\\|vh" @font-lock-constant-face)))
      (important) @font-lock-builtin-face)
 
    :language 'css-in-js
@@ -142,10 +144,10 @@ using the color specified by that value."
   "treesit configuration for CSS-in-JS syntax highlighting.")
 
 (defvar css-in-js-mode--font-lock-feature-list
-  '((selector comment query keywordp)
-    (property constant string<)
+  '((selector comment query keyword)
+    (property constant string)
     (variable function operator bracket cssjs:property_values))
-  "a list of lists of non-standard font-lock features.")
+  "a list of lists of font-lock features describing what font-locking to apply at what font-lock level.")
 
 (defvar css-in-js-mode--indent-rules
   `((css-in-js
@@ -176,6 +178,16 @@ using the color specified by that value."
   "treesit configuration for CSS-in-JS indentation.")
 
 
+(defvar-local css-in-js-mode--current-region
+    nil
+  "Internal variable.  A cons cell describing the range of the css-in-js range
+containing point, if any.")
+
+(defvar-local css-in-js-mode--major-mode-lang
+    nil
+  "Internal variable.  The treesit language belonging to the parent major mode.")
+
+
 (defun css-in-js-mode--fontify-property-value (node override start end)
   "Conditionally applies font-locking to rule values.  START and END are buffer
 positions of the tree-sitter query which captured NODE; NODE is the captured
@@ -194,34 +206,29 @@ treesit node itself."
 			(list :foreground (readable-foreground-color text))
 		      (error nil))))))))
 
-(defun css-in-js-mode--treesit-set-ranges (start end pos)
+(defun css-in-js-mode--treesit-set-ranges (start end)
   "Updates the range info for tree-sitter parsers in this buffer."
-  (treesit-parser-set-included-ranges
-   (treesit-parser-create 'css-in-js)
-   (or
-    (seq-map
-     (lambda (el)
-       (cons
-        (+ (treesit-node-start (cdr el)) 1)
-        (- (treesit-node-end (cdr el)) 1)))
-     (seq-filter
+  (let ((pos (point)))
+    (treesit-parser-set-included-ranges
+     (treesit-parser-create 'css-in-js)
+     (seq-map
       (lambda (el)
-        (let* ((node (cdr el))
-               (start (treesit-node-start node))
-               (end (treesit-node-end node)))
-          (and
-	   (equal (treesit-node-type node)
-	          "template_string")
-           (> (- end start) 2) ; filter out empty template_string nodes
-           (or css-in-js-mode-force-highlighting
-               (and pos
-                    (>= pos start)
-                    (< pos end))))))
-      (treesit-query-capture
-       (treesit-buffer-root-node 'tsx)
-       css-in-js-mode--region-queries
-       start end)))
-    (list (cons 1 3)))))
+        (cons
+         (+ (treesit-node-start (cdr el)) 1)
+         (- (treesit-node-end (cdr el)) 1)))
+      (seq-filter
+       (lambda (el)
+         (let* ((node (cdr el))
+                (start (treesit-node-start node))
+                (end (treesit-node-end node)))
+           (and
+	    (equal (treesit-node-type node)
+	           "template_string")
+            (> (- end start) 2)))) ; filter out empty template_string nodes
+       (treesit-query-capture
+        (treesit-buffer-root-node css-in-js-mode--major-mode-lang)
+        css-in-js-mode--region-queries
+        (point-min) (point-max)))))))
 
 (defun css-in-js-mode--get-language-at-pos (pos)
   "POS is a buffer position."
@@ -231,7 +238,7 @@ treesit node itself."
 	      (<= pos (cdr el))))
        (treesit-parser-included-ranges (treesit-parser-create 'css-in-js)))
       'css-in-js
-    'tsx))
+    css-in-js-mode--major-mode-lang))
 
 (defun css-in-js-mode--current-region ()
   "Get the boundaries of the current CSS-in-JS region.
@@ -264,7 +271,7 @@ and BOL."
 (defun css-in-js-mode--complete-property ()
   "`css--complete-property' modified for CSS-in-JS."
   ;; the original expects properties to be preceded with a '{' or ';' which will
-  ;; not be the case for non-nested CSS rules in CSS-in-JS regions (we need to
+  ;; not be the case for top-level CSS rules in CSS-in-JS regions (we need to
   ;; search for backticks too)
   (save-excursion
     (let ((pos (point)))
@@ -280,12 +287,13 @@ and BOL."
   ;; to apply to tsx sexps instead of css-in-js ones
 (save-excursion
   (save-match-data
-    (let ((property (and (looking-back
-                          "\\([[:alnum:]-]+\\):.*"
-                          (car (css-in-js-mode--current-region))
-                          t)
-                         (member (match-string-no-properties 1)
-                                 css-property-ids))))
+    (let ((property
+           (and (looking-back
+                 "\\([[:alnum:]-]+\\):.*"
+                 (car (css-in-js-mode--current-region))
+                 t)
+                (member (match-string-no-properties 1)
+                        css-property-ids))))
       (when property
         (let ((end (point)))
           (save-excursion
@@ -302,11 +310,34 @@ and BOL."
         (css-in-js-mode--complete-property-value)
         (css-completion-at-point))))
 
-(defun css-in-js-mode--post-command-hook ()
-  (let ((position (point)))
-    (with-silent-modifications
-      (css-in-js-mode--treesit-set-ranges (point-min) (point-max) (point))
-      (treesit-font-lock-fontify-region (point-min) (point-max)))))
+(defvar-local css-in-js-mode--fontify-timer nil
+  "Internal timer for font-locking CSS-in-JS regions as they're entered and
+exited.")
+
+(defun css-in-js-mode--fontify-post-command ()
+  "Internal function to apply font-locking to the CSS-in-JS region containing
+point (if any)."
+  (when css-in-js-mode--fontify-timer
+    (cancel-timer css-in-js-mode--fontify-timer))
+  (setq css-in-js-mode--fontify-timer
+        (run-with-idle-timer
+         (+ 0.1 jit-lock-context-time) nil
+         (lambda ()
+           (css-in-js-mode--treesit-set-ranges (point-min) (point-max))
+           (let* ((pos (point)))
+             (seq-do
+              (lambda (el)
+                (let ((treesit-font-lock-settings
+                       (if (and (>= pos (car el))
+                                (<= pos (cdr el)))
+                           (append
+                            treesit-font-lock-settings
+                            css-in-js-mode--font-lock-settings)
+                         treesit-font-lock-settings)))
+                  (treesit-font-lock-fontify-region
+                   (car el) (cdr el))))
+              (treesit-parser-included-ranges
+               (treesit-parser-create 'css-in-js))))))))
 
 
 ;;;###autoload
@@ -316,17 +347,35 @@ and BOL."
   :group 'css-in-js-mode
   :version "29.0"
 
+  ;; store a reference to the language configured by the major mode
+  (setq-local
+   css-in-js-mode--major-mode-lang
+   (treesit-parser-language (car (treesit-parser-list))))
   (when (treesit-ready-p 'css-in-js)
     ;; define css-in-js ranges
     (setq-local
      treesit-language-at-point-function
      #'css-in-js-mode--get-language-at-pos)
-    ;; configure font-lock for those ranges
     (setq-local
-     treesit-font-lock-settings
+     treesit-range-settings
      (append
-      treesit-font-lock-settings
-      css-in-js-mode--font-lock-settings))
+      treesit-range-settings
+      (treesit-range-rules
+       'css-in-js-mode--treesit-set-ranges)))
+    ;; configure font-lock for those ranges
+    (if css-in-js-mode-force-highlighting
+        (setq-local
+         treesit-font-lock-settings
+         (append
+          treesit-font-lock-settings
+          css-in-js-mode--font-lock-settings))
+      (progn
+        ;; this does something weird with strings and ppss that I don't like
+        (setq-local jit-lock-antiblink-grace 0)
+        (add-hook
+         'post-command-hook
+         #'css-in-js-mode--fontify-post-command
+         nil t)))
     (setq-local
      treesit-font-lock-feature-list
      (seq-mapn
@@ -349,27 +398,20 @@ and BOL."
      #'css-in-js-mode--capf
      nil t)
     ;; reconfigure treesit with our added functionality
-    (css-in-js-mode--treesit-set-ranges (point-min) (point-max) (point))
-    (treesit-major-mode-setup)
-    ;; misc
-    (add-hook
-     'post-command-hook
-     #'css-in-js-mode--post-command-hook
-     nil t)
-    )
+    (treesit-major-mode-setup))
   t)
 
 
-(defun css-in-js-mode--treesit-archive-filename ()
-  "Returns the name of a shared-library archive appropriate for the current OS
-and hardware."
-  ;; TODO: OSX+M1 support (requires artifacts to be built)
+(defconst css-in-js-mode--treesit-archive-filename
   (cond
    ((eq system-type "windows")
     "windows.tar.gz")
    ((eq system-type "darwin")
     "macos.tar.gz")
-   (t "linux.tar.gz")))
+   (t "linux.tar.gz"))
+    "The name of a shared-library archive appropriate for the current OS and
+hardware.")
+
 
 (defun css-in-js-mode--treesit-shared-library-path ()
   "Returns the absolute path to a filesystem directory suitable for storing
