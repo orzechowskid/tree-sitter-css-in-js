@@ -5,7 +5,12 @@ name: Auto-release
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
+    paths:
+      - grammar.js
+      - src/**/*
+      - corpus/**/*
 
 jobs:
   build-release-linux:
