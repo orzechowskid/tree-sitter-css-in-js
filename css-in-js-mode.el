@@ -48,10 +48,16 @@ using the color specified by that value."
 
 (defvar css-in-js-mode--region-queries
   '(
-    ;; styled-components, emotion, etc. styled.foo``
-    ((member_expression ((identifier) @id) (:match "styled" @id)) (template_string) @ts)
-    ;; styled-components, emotion, etc. styled(Foo)``
-    ((call_expression ((identifier) @id) (:match "styled" @id)) (template_string) @ts)
+    ;; styled-components, emotion, etc.
+    ;; styled.foo``
+    ((member_expression ((identifier) @id1) (:match "styled" @id1)) (template_string) @ts1)
+    ;; styled(Foo)``
+    ((call_expression (identifier) @id2 (:match "styled" @id2) (template_string) @ts2))
+    ;; css``
+    ((call_expression (identifier) @id3 (:match "css" @id3) (template_string) @ts3))
+    ;; styled-jsx
+    ;; <style jsx>{``}</style>
+    ((jsx_element (jsx_opening_element (identifier) @name4 (:match "style" @name4) (jsx_attribute (property_identifier) @attr4 (:match "jsx" @attr4))) (jsx_expression (template_string) @ts4)))
     )
   "Typescript-grammar treesit queries targeting various CSS-in-JS regions.")
 
@@ -179,11 +185,6 @@ using the color specified by that value."
   "treesit configuration for CSS-in-JS indentation.")
 
 
-(defvar-local css-in-js-mode--current-region
-    nil
-  "Internal variable.  A cons cell describing the range of the css-in-js range
-containing point, if any.")
-
 (defvar-local css-in-js-mode--major-mode-lang
     nil
   "Internal variable.  The treesit language belonging to the parent major mode.")
@@ -236,7 +237,9 @@ treesit node itself."
       (list (cons (point-max) (point-max)))))))
 
 (defun css-in-js-mode--get-language-at-pos (pos)
-  "POS is a buffer position."
+  "Returns the treesit language at buffer position POS, either 'css-in-js or the
+major mode's host language.
+This function is suitable for use as `treesit-language-at-point-function'."
   (if (seq-find
        (lambda (el)
 	 (and (>= pos (car el))
@@ -351,13 +354,13 @@ point (if any)."
   :lighter " CSS+JS"
   :group 'css-in-js-mode
   :version "29.0"
-  ;; store a reference to the language configured by the major mode
-  (setq-local
-   css-in-js-mode--major-mode-lang
-   (treesit-parser-language (car (treesit-parser-list))))
   (pcase css-in-js-mode
     ;; enabling
     ('t
+     ;; store a reference to the language configured by the major mode
+     (setq-local
+      css-in-js-mode--major-mode-lang
+      (treesit-parser-language (car (treesit-parser-list))))
      (when (treesit-ready-p 'css-in-js)
        ;; configure range definitions
        (setq-local
@@ -408,7 +411,7 @@ point (if any)."
     ;; disabling
     ('nil
      ;; remove parser
-     ;; TODO: graceful removal of range settings (right now our rang-setting
+     ;; TODO: graceful removal of range settings (right now our range-setting
      ;; function just checks that this mode is not disabled)
      (treesit-parser-delete (treesit-parser-create 'css-in-js))
      ;; unconfigure font-lock
