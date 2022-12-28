@@ -25,7 +25,7 @@ shared libraries for all supported OS+CPU platforms are automatically built for 
 |---------|---------|------------------|
 | Linux   | x86\_64 | builds; tested   |
 | OSX     | x86\_64 | builds; untested |
-| OSX     | arm64   | builds; untested |
+| OSX     | arm64   | builds; tested   |
 | Windows | x86\_64 | builds; untested |
 
 ### Local build instructions
