@@ -52,7 +52,7 @@ using the color specified by that value."
     ;; styled.foo``
     ((member_expression ((identifier) @id1) (:match "styled" @id1)) (template_string) @ts1)
     ;; styled(Foo)``
-    ((call_expression (identifier) @id2 (:match "styled" @id2) (template_string) @ts2))
+    ((call_expression (identifier) @id2) (:match "styled" @id2) (template_string) @ts2)
     ;; css``
     ((call_expression (identifier) @id3 (:match "css" @id3) (template_string) @ts3))
     ;; styled-jsx
