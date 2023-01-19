@@ -1,9 +1,12 @@
 ;;; css-in-js-mode.el --- CSS-in-JS minor mode -*- lexical-binding: t; -*-
 
+;;; Commentary:
+
 ;;; Code:
 
 (require 'css-mode)
 (require 'treesit)
+(require 'typescript-ts-mode)
 
 (defgroup css-in-js-mode nil
   "CSS-in-JS minor mode."
@@ -258,7 +261,17 @@ Returns a cons cell (start . end) of buffer locations."
    (treesit-parser-included-ranges (treesit-parser-create 'css-in-js))))
 
 (defun css-in-js-mode--simple-indent (node parent bol)
-  "treesit indent function to handle some css-in-js edge cases.
+  "Treesit indent function to handle some css-in-js edge cases.
+Calls `treesit-simple-indent' with (possibly modified values of) NODE, PARENT,
+and BOL."
+  (if (eq (treesit-language-at (point)) 'css-in-js)
+      (let ((treesit-simple-indent-rules css-in-js-mode--indent-rules))
+        (css-in-js-mode--simple-indent-1 node parent bol))
+    (let ((treesit-simple-indent-rules (typescript-ts-mode--indent-rules 'tsx)))
+      (treesit-simple-indent node parent bol))))
+
+(defun css-in-js-mode--simple-indent-1 (node parent bol)
+  "Treesit indent function to handle some css-in-js edge cases.
 Calls `treesit-simple-indent' with (possibly modified values of) NODE, PARENT,
 and BOL."
   (cond
@@ -393,11 +406,6 @@ point (if any)."
          treesit-font-lock-feature-list css-in-js-mode--font-lock-feature-list))
        ;; configure indentation
        (setq-local
-        treesit-simple-indent-rules
-        (append
-         css-in-js-mode--indent-rules
-         treesit-simple-indent-rules))
-       (setq-local
         treesit-indent-function
         #'css-in-js-mode--simple-indent)
        ;; configure capf
@@ -421,12 +429,6 @@ point (if any)."
        #'seq-difference
        treesit-font-lock-feature-list css-in-js-mode--font-lock-feature-list))
      ;; unconfigure indentation
-     (setq-local
-      treesit-simple-indent-rules
-      (seq-filter
-       (lambda (el)
-         (not (eq (car el) 'css-in-js)))
-       treesit-simple-indent-rules))
      (setq-local
       treesit-indent-function
       #'treesit-simple-indent)
