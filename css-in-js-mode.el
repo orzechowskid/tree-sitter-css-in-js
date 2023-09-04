@@ -61,6 +61,8 @@ using the color specified by that value."
     ;; styled-jsx
     ;; <style jsx>{``}</style>
     ((jsx_element (jsx_opening_element (identifier) @name4 (:match "style" @name4) (jsx_attribute (property_identifier) @attr4 (:match "jsx" @attr4))) (jsx_expression (template_string) @ts4)))
+    ;; Qwik - useStyles$(``) or useStylesScoped$(``)
+    ((call_expression (identifier) @id5 (:match "^useStyles\\(Scoped\\)?\\$" @id5) (arguments (template_string) @ts5)))
     )
   "Typescript-grammar treesit queries targeting various CSS-in-JS regions.")
 
