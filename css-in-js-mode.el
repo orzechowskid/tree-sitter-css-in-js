@@ -446,9 +446,9 @@ point (if any)."
 
 (defconst css-in-js-mode--treesit-archive-filename
   (cond
-   ((eq system-type "windows")
+   ((eq system-type 'windows)
     "windows.tar.gz")
-   ((eq system-type "darwin")
+   ((eq system-type 'darwin)
     "macos.tar.gz")
    (t "linux.tar.gz"))
     "The name of a shared-library archive appropriate for the current OS and
