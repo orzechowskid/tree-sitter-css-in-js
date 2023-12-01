@@ -261,7 +261,6 @@ Returns a cons cell (start . end) of buffer locations."
   "Treesit indent function to handle some css-in-js edge cases.
 Calls `treesit-simple-indent' with NODE, PARENT, BOL, and a different rule-set
 based on language at point."
-  (message "node: %s parent: %s bol: %s" node parent bol)
   (if (eq (treesit-language-at (point)) 'css-in-js)
       (let ((treesit-simple-indent-rules css-in-js-mode--indent-rules))
         (treesit-simple-indent node parent bol))
