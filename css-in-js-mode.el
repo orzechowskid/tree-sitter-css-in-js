@@ -132,23 +132,22 @@ using the color specified by that value."
   "Font-lock features applicable at different treesit font-lock levels.")
 
 (defvar css-in-js-mode--indent-rules
-  `((css-in-js
-     ;; a treesit parser root node spans the entire buffer, but CSS-in-JS
-     ;; indentation may be different for individual regions due to indentation of
-     ;; the JS template_string itself.  anything with a parent of "stylesheet" is
-     ;; is at the top level of its CSS-in-JS region and is treated specially
-     ((parent-is "stylesheet")
-      css-in-js-mode--get-stylesheet-anchor
-      ,(if (numberp css-in-js-mode-leading-indentation)
-           css-in-js-mode-leading-indentation
-         css-indent-offset))
-     ;; regular treesit simple indent rules
-     ((node-is "}") parent-bol 0)
-     ((node-is ")") parent-bol 0)
-     ((parent-is "block") parent-bol css-indent-offset)
-     ((parent-is "declaration") parent-bol css-indent-offset)
-     ((parent-is "feature_query") parent-bol css-indent-offset)
-     ))
+  `(css-in-js
+    ;; a treesit parser root node spans the entire buffer, but CSS-in-JS
+    ;; indentation may be different for individual regions due to indentation of
+    ;; the JS template_string itself.  anything with a parent of "stylesheet" is
+    ;; is at the top level of its CSS-in-JS region and is treated specially
+    ((parent-is "stylesheet")
+     css-in-js-mode--get-stylesheet-anchor
+     ,(if (numberp css-in-js-mode-leading-indentation)
+          css-in-js-mode-leading-indentation
+        css-indent-offset))
+    ;; regular treesit simple indent rules
+    ((node-is "}") parent-bol 0)
+    ((node-is ")") parent-bol 0)
+    ((parent-is "block") parent-bol css-indent-offset)
+    ((parent-is "declaration") parent-bol css-indent-offset)
+    ((parent-is "feature_query") parent-bol css-indent-offset))
   "List of treesit configuration objects for CSS-in-JS indentation.")
 
 
@@ -257,17 +256,6 @@ Returns a cons cell (start . end) of buffer locations."
      (< (point) (cdr el)))
    (treesit-parser-included-ranges (treesit-parser-create 'css-in-js))))
 
-(defun css-in-js-mode--simple-indent (node parent bol)
-  "Treesit indent function to handle some css-in-js edge cases.
-Calls `treesit-simple-indent' with NODE, PARENT, BOL, and a different rule-set
-based on language at point."
-  (if (eq (treesit-language-at (point)) 'css-in-js)
-      (let ((treesit-simple-indent-rules css-in-js-mode--indent-rules))
-        (treesit-simple-indent node parent bol))
-    ;; FIXME: this couples our minor mode to a specific major mode
-    (let ((treesit-simple-indent-rules (typescript-ts-mode--indent-rules 'tsx)))
-      (treesit-simple-indent node parent bol))))
-
 (defun css-in-js-mode--complete-property ()
   "`css--complete-property' modified for CSS-in-JS."
   ;; the original expects properties to be preceded with a '{' or ';' which will
@@ -353,9 +341,7 @@ based on language at point."
          #'append
          treesit-font-lock-feature-list css-in-js-mode--font-lock-feature-list))
        ;; configure indentation
-       (setq-local
-        treesit-indent-function
-        #'css-in-js-mode--simple-indent)
+       (add-to-list 'treesit-simple-indent-rules css-in-js-mode--indent-rules t)
        ;; apply treesit-related changes
        (treesit-major-mode-setup)
        ;; configure capf
