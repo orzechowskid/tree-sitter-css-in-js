@@ -74,30 +74,18 @@ using the color specified by that value."
   ;; typescript-ts-mode.el does, so that the same rules can be consumed here.
   ;; until then, we copypasta
   (treesit-font-lock-rules
+   :feature 'comment
    :language 'css-in-js
-   :feature 'property
    :override t
-   '((property_name) @css-property)
+   '((comment) @font-lock-comment-face)
+
+   :feature 'string
    :language 'css-in-js
-   :feature 'selector
    :override t
-   '((class_selector) @css-selector
-     (child_selector) @css-selector
-     (id_selector) @css-selector
-     (attribute_selector) @css-selector
-     (tag_name) @css-selector
-     (class_name) @css-selector)
-   :language 'css-in-js
-   :feature 'constant
-   :override t
-   '((integer_value) @font-lock-number-face
-     (float_value) @font-lock-number-face
-     (unit) @font-lock-constant-face
-     ;; e.g. `width: ${foo}px;`
-     (declaration ((js_interpolation) (plain_value) @font-lock-constant-face (:match "px\\|em\\|rem\\|vw\\|vh" @font-lock-constant-face)))
-     (important) @font-lock-builtin-face)
-   :language 'css-in-js
+   '((string_value) @font-lock-string-face)
+
    :feature 'keyword
+   :language 'css-in-js
    :override t
    '(["@media"
       "@import"
@@ -109,20 +97,63 @@ using the color specified by that value."
        "not"
        "only"
        "selector"] @font-lock-keyword-face)
+
+   :feature 'variable
+   :language 'css-in-js
+   :override t
+   '((plain_value) @font-lock-variable-name-face)
+
+   :feature 'operator
+   :language 'css-in-js
+   :override t
+   `(["=" "~=" "^=" "|=" "*=" "$="] @font-lock-operator-face)
+
+   :feature 'selector
+   :language 'css-in-js
+   :override t
+   '((class_selector) @css-selector
+     (child_selector) @css-selector
+     (id_selector) @css-selector
+     (attribute_selector) @css-selector
+     (tag_name) @css-selector
+     (class_name) @css-selector)
+
+   :feature 'property
+   :language 'css-in-js
+   :override t
+   '((property_name) @css-property)
+
+   :feature 'function
+   :language 'css-in-js
+   :override t
+   '((function_name) @font-lock-function-name-face)
+
+   :feature 'constant
+   :language 'css-in-js
+   :override t
+   '((integer_value) @font-lock-number-face
+     (float_value) @font-lock-number-face
+     (unit) @font-lock-constant-face
+     ;; e.g. `width: ${foo}px;`
+     (declaration ((js_interpolation) (plain_value) @font-lock-constant-face (:match "px\\|em\\|rem\\|vw\\|vh" @font-lock-constant-face)))
+     (important) @font-lock-builtin-face)
+
+   :feature 'query
+   :language 'css-in-js
+   :override t
+   '((keyword_query) @font-lock-property-use-face
+     (feature_name) @font-lock-property-use-face)
+
+   :feature 'bracket
+   :language 'css-in-js
+   :override t
+   '((["(" ")" "[" "]" "{" "}"]) @font-lock-bracket-face)
+
    :language 'css-in-js
    :feature 'property_values
    :override t
    '((plain_value) @css-in-js-mode--fontify-property-value
-     (color_value) @css-in-js-mode--fontify-property-value)
-   :language 'css-in-js
-   :feature 'comment
-   :override t
-   '((comment) @font-lock-comment-face)
-   :language 'css-in-js
-   :feature 'string
-   :override t
-   '((string_value) @font-lock-string-face)
-   )
+     (color_value) @css-in-js-mode--fontify-property-value))
   "Treesit configuration for CSS-in-JS syntax highlighting.")
 
 (defvar css-in-js-mode--font-lock-feature-list
