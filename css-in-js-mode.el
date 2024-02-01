@@ -232,8 +232,10 @@ using the color specified by that value."
        (lambda (el)
          (cons
           ;; slice off the template-string delimiters
-          (+ (treesit-node-start (cdr el)) 1)
-          (- (treesit-node-end (cdr el)) 1)))
+          (1+ (treesit-node-start (cdr el)))
+          (save-excursion (goto-char (1- (treesit-node-end (cdr el))))
+                          (skip-chars-backward " \t\n\r")
+                          (point))))
        (seq-filter
         (lambda (el)
           (let* ((node (cdr el))
