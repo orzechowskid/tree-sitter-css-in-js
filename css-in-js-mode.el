@@ -190,6 +190,10 @@ using the color specified by that value."
     nil
   "Internal variable.  Store previous `comment-dwim' remapping before we remap it.")
 
+(defvar-local css-in-js--treesit-parser
+    nil
+  "Internal variable. Store the `css-in-js' parser.")
+
 (defun css-in-js-mode--get-stylesheet-anchor (node &rest _ignored)
   "Return an indentation anchor point based on the containing region of NODE."
   (let ((region-for-node (css-in-js-mode--get-region-for-node node)))
@@ -229,7 +233,7 @@ using the color specified by that value."
   "Update the range info for tree-sitter parsers in this buffer."
   (when css-in-js-mode
     (treesit-parser-set-included-ranges
-     (treesit-parser-create 'css-in-js)
+     css-in-js--treesit-parser
      (or
       (seq-map
        (lambda (el)
@@ -261,11 +265,11 @@ using the color specified by that value."
 
 The language will be either css-in-js or the major mode's host language.  This
 function is suitable for use as `treesit-language-at-point-function'."
-  (if (seq-find
+  (if (and css-in-js-mode (seq-find
        (lambda (el)
 	 (and (>= pos (car el))
 	      (<= pos (cdr el))))
-       (treesit-parser-included-ranges (treesit-parser-create 'css-in-js)))
+       (treesit-parser-included-ranges css-in-js--treesit-parser)))
       'css-in-js
     css-in-js-mode--major-mode-lang))
 
@@ -280,7 +284,7 @@ function is suitable for use as `treesit-language-at-point-function'."
          ;; negatives when there are syntax errors inside of CSS-in-JS nodes)
          (and (>= node-start (car el))
               (<= node-start (cdr el))))
-       (treesit-parser-included-ranges (treesit-parser-create 'css-in-js))
+       (treesit-parser-included-ranges css-in-js--treesit-parser)
        nil))))
 
 (defun css-in-js-mode--current-region ()
@@ -290,7 +294,7 @@ Returns a cons cell (start . end) of buffer locations."
    (lambda (el)
      ;; ranges by definition are sorted and non-overlapping
      (< (point) (cdr el)))
-   (treesit-parser-included-ranges (treesit-parser-create 'css-in-js))))
+   (treesit-parser-included-ranges css-in-js--treesit-parser)))
 
 (defun css-in-js-mode--complete-property ()
   "`css--complete-property' modified for CSS-in-JS."
@@ -352,19 +356,19 @@ See `comment-dwim' documentation for ARG usage."
   :group 'css-in-js-mode
   :version "29.0"
   (when (treesit-ready-p 'css-in-js)
-    ;; store a reference to the language configured by the major mode
-    ;; FIXME: this is fragile - it seems like an implementation detail that new
-    ;; treesit parsers are added to the head of the list returned by
-    ;; `treesit-parser-list'
-    (setq-local
-     css-in-js-mode--major-mode-lang
-     (treesit-parser-language (car (treesit-parser-list))))
     (pcase css-in-js-mode
       ('t
+       ;; store a reference to the language configured by the major mode
+       ;; FIXME: this is fragile - it seems like an implementation detail that new
+       ;; treesit parsers are added to the head of the list returned by
+       ;; `treesit-parser-list'
+       (setq-local
+        css-in-js-mode--major-mode-lang
+        (treesit-parser-language (car (treesit-parser-list))))
        ;; mode is being enabled
        (message "enabling...")
        ;; create parser
-       (treesit-parser-create 'css-in-js)
+       (setq-local css-in-js--treesit-parser (treesit-parser-create 'css-in-js))
        ;; configure range definitions
        (setq-local
         treesit-range-settings
@@ -413,7 +417,8 @@ See `comment-dwim' documentation for ARG usage."
        ;; remove parser
        ;; TODO: graceful removal of range settings (right now our range-setting
        ;; function just checks that this mode is not disabled)
-       (treesit-parser-delete (treesit-parser-create 'css-in-js))))))
+       (treesit-parser-delete css-in-js--treesit-parser)
+       ))))
 
     ;; (setq-local
     ;;  css-in-js-mode--major-mode-lang
