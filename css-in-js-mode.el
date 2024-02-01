@@ -186,6 +186,9 @@ using the color specified by that value."
     nil
   "Internal variable.  The treesit language belonging to the parent major mode.")
 
+(defvar-local css-in-js--previous-comment-dwim-remapping
+    nil
+  "Internal variable.  Store previous `comment-dwim' remapping before we remap it.")
 
 (defun css-in-js-mode--get-stylesheet-anchor (node &rest _ignored)
   "Return an indentation anchor point based on the containing region of NODE."
@@ -331,6 +334,17 @@ Returns a cons cell (start . end) of buffer locations."
         (css-in-js-mode--complete-property-value)
         (css-completion-at-point))))
 
+(defun css-in-js-comment-dwim (arg)
+  "Add support for commenting/uncommenting inside css in js.
+See `comment-dwim' documentation for ARG usage."
+  (interactive "P")
+  (if (eq (css-in-js-mode--get-language-at-pos (point)) 'css-in-js)
+      (let ((comment-start "/* ")
+            (comment-end " */"))
+        (comment-dwim arg))
+    (if css-in-js--previous-comment-dwim-remapping
+        (funcall css-in-js--previous-comment-dwim-remapping arg)
+      (comment-dwim arg))))
 
 (define-minor-mode css-in-js-mode
   "a minor mode for some flavors of CSS-in-JS."
@@ -382,6 +396,9 @@ Returns a cons cell (start . end) of buffer locations."
         'completion-at-point-functions
         #'css-in-js-mode--capf
         nil t)
+       ;; comments support
+       (setq-local css-in-js--previous-comment-dwim-remapping (command-remapping 'comment-dwim))
+       (define-key (current-local-map) [remap comment-dwim] 'css-in-js-comment-dwim)
        ;; (add-hook
        ;;  'post-command-hook
        ;;  #'css-in-js-mode--fontify-post-command
@@ -390,6 +407,9 @@ Returns a cons cell (start . end) of buffer locations."
       ('nil
        ;; mode is being disabled
        (message "disabling...")
+       ;; remove comments support
+       (define-key (current-local-map) [remap comment-dwim]
+                   css-in-js--previous-comment-dwim-remapping)
        ;; remove parser
        ;; TODO: graceful removal of range settings (right now our range-setting
        ;; function just checks that this mode is not disabled)
