@@ -395,6 +395,8 @@ See `comment-dwim' documentation for ARG usage."
        (add-to-list 'treesit-simple-indent-rules css-in-js-mode--indent-rules t)
        ;; apply treesit-related changes
        (treesit-major-mode-setup)
+       ;; force refontification (needed starting 29.2, cf bug #66223)
+       (treesit-font-lock-fontify-region (point-min) (point-max))
        ;; configure capf
        (add-hook
         'completion-at-point-functions
