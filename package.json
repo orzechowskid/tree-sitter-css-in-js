@@ -8,11 +8,11 @@
         "incremental"
     ],
     "dependencies": {
-        "nan": "^2.12.1",
-        "node-gyp": "^9.1.0"
+        "nan": "^2.18.0",
+        "node-gyp": "^10.0.1"
     },
     "devDependencies": {
-        "tree-sitter-cli": "^0.20.6"
+        "tree-sitter-cli": "^0.20.8"
     },
     "scripts": {
         "build": "node-gyp configure && node-gyp build && tree-sitter generate",
