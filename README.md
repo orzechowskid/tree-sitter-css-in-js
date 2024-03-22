@@ -47,7 +47,7 @@ emacs users should note that this repository is not currently compatible with th
 ### Installation
 
 1. download `css-in-js-mode.el` and put it in a directory listed in your `load-path`
-1. load the file: `(require 'css-in-js)`
+1. load the file: `(require 'css-in-js-mode)`
 
 > these steps can also be done using [straight.el](https://github.com/radian-software/straight.el):
 > `(straight-use-package '(css-in-js-mode :type git :host github :repo "orzechowskid/tree-sitter-css-in-js"))`

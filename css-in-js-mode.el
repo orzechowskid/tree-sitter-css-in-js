@@ -74,30 +74,18 @@ using the color specified by that value."
   ;; typescript-ts-mode.el does, so that the same rules can be consumed here.
   ;; until then, we copypasta
   (treesit-font-lock-rules
+   :feature 'comment
    :language 'css-in-js
-   :feature 'property
    :override t
-   '((property_name) @css-property)
+   '((comment) @font-lock-comment-face)
+
+   :feature 'string
    :language 'css-in-js
-   :feature 'selector
    :override t
-   '((class_selector) @css-selector
-     (child_selector) @css-selector
-     (id_selector) @css-selector
-     (attribute_selector) @css-selector
-     (tag_name) @css-selector
-     (class_name) @css-selector)
-   :language 'css-in-js
-   :feature 'constant
-   :override t
-   '((integer_value) @font-lock-number-face
-     (float_value) @font-lock-number-face
-     (unit) @font-lock-constant-face
-     ;; e.g. `width: ${foo}px;`
-     (declaration ((js_interpolation) (plain_value) @font-lock-constant-face (:match "px\\|em\\|rem\\|vw\\|vh" @font-lock-constant-face)))
-     (important) @font-lock-builtin-face)
-   :language 'css-in-js
+   '((string_value) @font-lock-string-face)
+
    :feature 'keyword
+   :language 'css-in-js
    :override t
    '(["@media"
       "@import"
@@ -109,20 +97,63 @@ using the color specified by that value."
        "not"
        "only"
        "selector"] @font-lock-keyword-face)
+
+   :feature 'variable
+   :language 'css-in-js
+   :override t
+   '((plain_value) @font-lock-variable-name-face)
+
+   :feature 'operator
+   :language 'css-in-js
+   :override t
+   `(["=" "~=" "^=" "|=" "*=" "$="] @font-lock-operator-face)
+
+   :feature 'selector
+   :language 'css-in-js
+   :override t
+   '((class_selector) @css-selector
+     (child_selector) @css-selector
+     (id_selector) @css-selector
+     (attribute_selector) @css-selector
+     (tag_name) @css-selector
+     (class_name) @css-selector)
+
+   :feature 'property
+   :language 'css-in-js
+   :override t
+   '((property_name) @css-property)
+
+   :feature 'function
+   :language 'css-in-js
+   :override t
+   '((function_name) @font-lock-function-name-face)
+
+   :feature 'constant
+   :language 'css-in-js
+   :override t
+   '((integer_value) @font-lock-number-face
+     (float_value) @font-lock-number-face
+     (unit) @font-lock-constant-face
+     ;; e.g. `width: ${foo}px;`
+     (declaration ((js_interpolation) (plain_value) @font-lock-constant-face (:match "px\\|em\\|rem\\|vw\\|vh" @font-lock-constant-face)))
+     (important) @font-lock-builtin-face)
+
+   :feature 'query
+   :language 'css-in-js
+   :override t
+   '((keyword_query) @font-lock-property-use-face
+     (feature_name) @font-lock-property-use-face)
+
+   :feature 'bracket
+   :language 'css-in-js
+   :override t
+   '((["(" ")" "[" "]" "{" "}"]) @font-lock-bracket-face)
+
    :language 'css-in-js
    :feature 'property_values
    :override t
    '((plain_value) @css-in-js-mode--fontify-property-value
-     (color_value) @css-in-js-mode--fontify-property-value)
-   :language 'css-in-js
-   :feature 'comment
-   :override t
-   '((comment) @font-lock-comment-face)
-   :language 'css-in-js
-   :feature 'string
-   :override t
-   '((string_value) @font-lock-string-face)
-   )
+     (color_value) @css-in-js-mode--fontify-property-value))
   "Treesit configuration for CSS-in-JS syntax highlighting.")
 
 (defvar css-in-js-mode--font-lock-feature-list
@@ -132,23 +163,22 @@ using the color specified by that value."
   "Font-lock features applicable at different treesit font-lock levels.")
 
 (defvar css-in-js-mode--indent-rules
-  `((css-in-js
-     ;; a treesit parser root node spans the entire buffer, but CSS-in-JS
-     ;; indentation may be different for individual regions due to indentation of
-     ;; the JS template_string itself.  anything with a parent of "stylesheet" is
-     ;; is at the top level of its CSS-in-JS region and is treated specially
-     ((parent-is "stylesheet")
-      css-in-js-mode--get-stylesheet-anchor
-      ,(if (numberp css-in-js-mode-leading-indentation)
-           css-in-js-mode-leading-indentation
-         css-indent-offset))
-     ;; regular treesit simple indent rules
-     ((node-is "}") parent-bol 0)
-     ((node-is ")") parent-bol 0)
-     ((parent-is "block") parent-bol css-indent-offset)
-     ((parent-is "declaration") parent-bol css-indent-offset)
-     ((parent-is "feature_query") parent-bol css-indent-offset)
-     ))
+  `(css-in-js
+    ;; a treesit parser root node spans the entire buffer, but CSS-in-JS
+    ;; indentation may be different for individual regions due to indentation of
+    ;; the JS template_string itself.  anything with a parent of "stylesheet" is
+    ;; is at the top level of its CSS-in-JS region and is treated specially
+    ((parent-is "stylesheet")
+     css-in-js-mode--get-stylesheet-anchor
+     ,(if (numberp css-in-js-mode-leading-indentation)
+          css-in-js-mode-leading-indentation
+        css-indent-offset))
+    ;; regular treesit simple indent rules
+    ((node-is "}") parent-bol 0)
+    ((node-is ")") parent-bol 0)
+    ((parent-is "block") parent-bol css-indent-offset)
+    ((parent-is "declaration") parent-bol css-indent-offset)
+    ((parent-is "feature_query") parent-bol css-indent-offset))
   "List of treesit configuration objects for CSS-in-JS indentation.")
 
 
@@ -156,6 +186,13 @@ using the color specified by that value."
     nil
   "Internal variable.  The treesit language belonging to the parent major mode.")
 
+(defvar-local css-in-js--previous-comment-dwim-remapping
+    nil
+  "Internal variable.  Store previous `comment-dwim' remapping before we remap it.")
+
+(defvar-local css-in-js--treesit-parser
+    nil
+  "Internal variable. Store the `css-in-js' parser.")
 
 (defun css-in-js-mode--get-stylesheet-anchor (node &rest _ignored)
   "Return an indentation anchor point based on the containing region of NODE."
@@ -196,14 +233,16 @@ using the color specified by that value."
   "Update the range info for tree-sitter parsers in this buffer."
   (when css-in-js-mode
     (treesit-parser-set-included-ranges
-     (treesit-parser-create 'css-in-js)
+     css-in-js--treesit-parser
      (or
       (seq-map
        (lambda (el)
          (cons
           ;; slice off the template-string delimiters
-          (+ (treesit-node-start (cdr el)) 1)
-          (- (treesit-node-end (cdr el)) 1)))
+          (1+ (treesit-node-start (cdr el)))
+          (save-excursion (goto-char (1- (treesit-node-end (cdr el))))
+                          (skip-chars-backward " \t\n\r")
+                          (point))))
        (seq-filter
         (lambda (el)
           (let* ((node (cdr el))
@@ -226,11 +265,11 @@ using the color specified by that value."
 
 The language will be either css-in-js or the major mode's host language.  This
 function is suitable for use as `treesit-language-at-point-function'."
-  (if (seq-find
+  (if (and css-in-js-mode (seq-find
        (lambda (el)
 	 (and (>= pos (car el))
 	      (<= pos (cdr el))))
-       (treesit-parser-included-ranges (treesit-parser-create 'css-in-js)))
+       (treesit-parser-included-ranges css-in-js--treesit-parser)))
       'css-in-js
     css-in-js-mode--major-mode-lang))
 
@@ -245,7 +284,7 @@ function is suitable for use as `treesit-language-at-point-function'."
          ;; negatives when there are syntax errors inside of CSS-in-JS nodes)
          (and (>= node-start (car el))
               (<= node-start (cdr el))))
-       (treesit-parser-included-ranges (treesit-parser-create 'css-in-js))
+       (treesit-parser-included-ranges css-in-js--treesit-parser)
        nil))))
 
 (defun css-in-js-mode--current-region ()
@@ -255,18 +294,7 @@ Returns a cons cell (start . end) of buffer locations."
    (lambda (el)
      ;; ranges by definition are sorted and non-overlapping
      (< (point) (cdr el)))
-   (treesit-parser-included-ranges (treesit-parser-create 'css-in-js))))
-
-(defun css-in-js-mode--simple-indent (node parent bol)
-  "Treesit indent function to handle some css-in-js edge cases.
-Calls `treesit-simple-indent' with NODE, PARENT, BOL, and a different rule-set
-based on language at point."
-  (if (eq (treesit-language-at (point)) 'css-in-js)
-      (let ((treesit-simple-indent-rules css-in-js-mode--indent-rules))
-        (treesit-simple-indent node parent bol))
-    ;; FIXME: this couples our minor mode to a specific major mode
-    (let ((treesit-simple-indent-rules (typescript-ts-mode--indent-rules 'tsx)))
-      (treesit-simple-indent node parent bol))))
+   (treesit-parser-included-ranges css-in-js--treesit-parser)))
 
 (defun css-in-js-mode--complete-property ()
   "`css--complete-property' modified for CSS-in-JS."
@@ -310,6 +338,17 @@ based on language at point."
         (css-in-js-mode--complete-property-value)
         (css-completion-at-point))))
 
+(defun css-in-js-comment-dwim (arg)
+  "Add support for commenting/uncommenting inside css in js.
+See `comment-dwim' documentation for ARG usage."
+  (interactive "P")
+  (if (eq (css-in-js-mode--get-language-at-pos (point)) 'css-in-js)
+      (let ((comment-start "/* ")
+            (comment-end " */"))
+        (comment-dwim arg))
+    (if css-in-js--previous-comment-dwim-remapping
+        (funcall css-in-js--previous-comment-dwim-remapping arg)
+      (comment-dwim arg))))
 
 (define-minor-mode css-in-js-mode
   "a minor mode for some flavors of CSS-in-JS."
@@ -317,19 +356,19 @@ based on language at point."
   :group 'css-in-js-mode
   :version "29.0"
   (when (treesit-ready-p 'css-in-js)
-    ;; store a reference to the language configured by the major mode
-    ;; FIXME: this is fragile - it seems like an implementation detail that new
-    ;; treesit parsers are added to the head of the list returned by
-    ;; `treesit-parser-list'
-    (setq-local
-     css-in-js-mode--major-mode-lang
-     (treesit-parser-language (car (treesit-parser-list))))
     (pcase css-in-js-mode
       ('t
+       ;; store a reference to the language configured by the major mode
+       ;; FIXME: this is fragile - it seems like an implementation detail that new
+       ;; treesit parsers are added to the head of the list returned by
+       ;; `treesit-parser-list'
+       (setq-local
+        css-in-js-mode--major-mode-lang
+        (treesit-parser-language (car (treesit-parser-list))))
        ;; mode is being enabled
        (message "enabling...")
        ;; create parser
-       (treesit-parser-create 'css-in-js)
+       (setq-local css-in-js--treesit-parser (treesit-parser-create 'css-in-js))
        ;; configure range definitions
        (setq-local
         treesit-range-settings
@@ -353,16 +392,19 @@ based on language at point."
          #'append
          treesit-font-lock-feature-list css-in-js-mode--font-lock-feature-list))
        ;; configure indentation
-       (setq-local
-        treesit-indent-function
-        #'css-in-js-mode--simple-indent)
+       (add-to-list 'treesit-simple-indent-rules css-in-js-mode--indent-rules t)
        ;; apply treesit-related changes
        (treesit-major-mode-setup)
+       ;; force refontification (needed starting 29.2, cf bug #66223)
+       (treesit-font-lock-fontify-region (point-min) (point-max))
        ;; configure capf
        (add-hook
         'completion-at-point-functions
         #'css-in-js-mode--capf
         nil t)
+       ;; comments support
+       (setq-local css-in-js--previous-comment-dwim-remapping (command-remapping 'comment-dwim))
+       (define-key (current-local-map) [remap comment-dwim] 'css-in-js-comment-dwim)
        ;; (add-hook
        ;;  'post-command-hook
        ;;  #'css-in-js-mode--fontify-post-command
@@ -371,10 +413,14 @@ based on language at point."
       ('nil
        ;; mode is being disabled
        (message "disabling...")
+       ;; remove comments support
+       (define-key (current-local-map) [remap comment-dwim]
+                   css-in-js--previous-comment-dwim-remapping)
        ;; remove parser
        ;; TODO: graceful removal of range settings (right now our range-setting
        ;; function just checks that this mode is not disabled)
-       (treesit-parser-delete (treesit-parser-create 'css-in-js))))))
+       (treesit-parser-delete css-in-js--treesit-parser)
+       ))))
 
     ;; (setq-local
     ;;  css-in-js-mode--major-mode-lang
