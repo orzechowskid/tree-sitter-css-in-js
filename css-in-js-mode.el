@@ -512,7 +512,7 @@ See `comment-dwim' documentation for ARG usage."
 
 (defconst css-in-js-mode--treesit-archive-filename
   (cond
-   ((eq system-type 'windows)
+   ((eq system-type 'windows-nt)
     "windows.tar.gz")
    ((eq system-type 'darwin)
     "macos.tar.gz")
