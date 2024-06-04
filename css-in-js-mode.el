@@ -1,6 +1,6 @@
 ;;; css-in-js-mode.el --- CSS-in-JS minor mode -*- lexical-binding: t; -*-
 
-;;; Version: 20240604.0.0
+;;; Version: 20240604.0.1
 
 ;;; Commentary:
 
