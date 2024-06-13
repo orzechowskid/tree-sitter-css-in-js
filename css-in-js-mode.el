@@ -320,7 +320,7 @@ Returns a cons cell (start . end) of buffer locations."
     (let ((property
            (and (looking-back
                  "\\([[:alnum:]-]+\\):.*"
-                 (car (css-in-js-mode--current-region))
+                 (min (point) (car (css-in-js-mode--current-region)))
                  t)
                 (member (match-string-no-properties 1)
                         css-property-ids))))
