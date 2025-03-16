@@ -1,6 +1,6 @@
 ;;; css-in-js-mode.el --- CSS-in-JS minor mode -*- lexical-binding: t; -*-
 
-;;; Version: 20240604.0.1
+;;; Version: 20250316.0
 
 ;;; Commentary:
 
@@ -295,7 +295,7 @@ Returns a cons cell (start . end) of buffer locations."
   (seq-find
    (lambda (el)
      ;; ranges by definition are sorted and non-overlapping
-     (< (point) (cdr el)))
+     (<= (point) (cdr el)))
    (treesit-parser-included-ranges css-in-js--treesit-parser)))
 
 (defun css-in-js-mode--complete-property ()
